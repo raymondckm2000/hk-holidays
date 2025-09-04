@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
   <title>HK Holidays (2017–2026) — Calendar + Editor + Theme + 1823 Sync</title>
-
   <style>
-    /* =====================  Theme Variables  ===================== */
     :root{
       color-scheme: light;
       --bg:#f7f9fc; --panel:#ffffff; --text:#102a43; --muted:#486581;
@@ -22,91 +20,47 @@
       --surface:#101b2b; --border:#223146; --input:#0b1522;
       --holiday:#ff6ea8; --stat:#49d1a1;
     }
-
-    /* =====================  Base  ===================== */
     *{box-sizing:border-box}
-    body{
-      margin:0; padding:16px;
-      background:var(--bg); color:var(--text);
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","PingFang TC","Hiragino Sans","Microsoft JhengHei",Arial,sans-serif;
-      line-height:1.5;
-    }
-    a{color:var(--accent); text-decoration:none}
-    a:hover{text-decoration:underline}
+    body{margin:0;padding:16px;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","PingFang TC","Hiragino Sans","Microsoft JhengHei",Arial,sans-serif;line-height:1.5}
+    a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
     header{margin-bottom:16px}
-    .wrap{display:grid; gap:16px}
-    @media (min-width: 1100px){
-      .wrap{grid-template-columns: 1.1fr 1fr}
-    }
-    .panel{
-      background:var(--panel);
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:14px;
-      box-shadow:0 6px 18px rgba(0,0,0,.08);
-    }
-    .row{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:10px}
-    .row label{color:var(--muted); min-width:76px}
-    select,input[type="date"],input[type="text"]{
-      background:var(--input); color:var(--text);
-      border:1px solid var(--border); border-radius:8px; height:36px; padding:6px 10px;
-    }
-    button,.btn{
-      background:var(--accent); color:#fff; border:0; border-radius:8px; padding:8px 14px; cursor:pointer
-    }
-    button:disabled{opacity:.6; cursor:not-allowed}
-    .badge{display:inline-block; padding:2px 8px; border-radius:999px; background:var(--input); border:1px solid var(--border); color:var(--muted)}
-    .status{font-size:14px; color:var(--muted)}
-    .status strong{color:var(--text)}
-    .problems{color:var(--warn)}
-    .ok{color:var(--ok)}
-    .pill{border:1px solid var(--border); background:var(--input); color:var(--muted); padding:2px 8px; border-radius:999px}
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+    .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
+    .row label{color:var(--muted);min-width:76px}
+    select,input[type="date"],input[type="text"]{background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:8px;height:36px;padding:6px 10px}
+    button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:8px 14px;cursor:pointer}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--input);border:1px solid var(--border);color:var(--muted)}
+    .pill{border:1px solid var(--border);background:var(--input);color:var(--muted);padding:2px 8px;border-radius:999px}
+    .status{font-size:14px;color:var(--muted)} .status strong{color:var(--text)} .ok{color:var(--ok)} .problems{color:var(--warn)}
 
-    /* =====================  Calendar  ===================== */
-    .cal-head{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px}
-    .cal-head .title{font-weight:700}
-    .cal-grid{
-      display:grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap:6px;
-      background:var(--surface);
-      border:1px solid var(--border);
-      border-radius:12px;
-      padding:8px;
-    }
-    .dow{font-size:12px; color:var(--muted); text-align:center; padding:6px 0}
-    .cell{
-      min-height:92px; background:var(--panel);
-      border:1px solid var(--border); border-radius:10px;
-      padding:6px; position:relative;
-    }
-    .cell .d{font-size:12px; color:var(--muted)}
-    .cell .hl{margin-top:4px; font-size:12px; line-height:1.25}
+    .cal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:8px}
+    .dow{font-size:12px;color:var(--muted);text-align:center;padding:6px 0}
+    .cell{min-height:92px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:6px;position:relative}
+    .cell .d{font-size:12px;color:var(--muted)}
+    .cell .hl{margin-top:4px;font-size:12px;line-height:1.25}
     .cell .hl .name{color:var(--holiday)}
-    .cell .hl .stat{color:var(--stat); font-weight:600; margin-left:6px; font-size:11px}
-
+    .cell .hl .stat{color:var(--stat);font-weight:600;margin-left:6px;font-size:11px}
     .cell.dim{opacity:.45}
 
-    /* =====================  Editor  ===================== */
-    .tblwrap{overflow:auto; background:var(--surface); border:1px solid var(--border); border-radius:12px}
-    table{width:100%; border-collapse:collapse; font-size:14px}
-    th,td{border-bottom:1px solid var(--border); padding:8px; text-align:left; vertical-align:top}
-    th{position:sticky; top:0; background:var(--panel); z-index:1}
-    tr:last-child td{border-bottom:none}
-    input[type="checkbox"]{width:16px; height:16px}
-    .flex{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+    .tblwrap{overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{border-bottom:1px solid var(--border);padding:8px;text-align:left;vertical-align:top}
+    th{position:sticky;top:0;background:var(--panel);z-index:1}
+    .flex{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
     .grow{flex:1}
-    .actions{display:flex; gap:8px; flex-wrap:wrap}
-    .mt8{margin-top:8px}
     .mb8{margin-bottom:8px}
+    .hide{display:none}
+    details>summary{list-style:none;cursor:pointer}
+    details>summary::-webkit-details-marker{display:none}
   </style>
 </head>
-
 <body>
   <header>
     <h1>HK Holidays (2017–2026)</h1>
     <p class="status">
-      預設讀取 <code>hk_holidays_2017_2026.json</code>（同目錄）；可手動同步 1823。
+      預設讀取 <code>hk_holidays_2017_2026.json</code>；可手動同步 1823。
       <span id="loadInfo" class="badge">初始化中…</span>
       <span class="pill" id="themeBadge">—</span>
     </p>
@@ -120,7 +74,10 @@
         <option value="light">Light（日間/白色）</option>
         <option value="dark">Dark（夜間/黑色）</option>
       </select>
-      <button id="btnSync">🔄 同步 1823（data.gov.hk）</button>
+
+      <button id="btnSync">🔄 同步 1823</button>
+      <label for="proxy">CORS Proxy</label>
+      <input id="proxy" type="text" placeholder="可留空；例：https://cors.isomorphic-git.org/" style="min-width:320px" />
     </div>
 
     <div class="row">
@@ -148,37 +105,33 @@
     <div class="row">
       <input id="fileInp" type="file" accept="application/json" hidden />
       <button id="btnLoadLocal">載入本地 JSON…</button>
-      <div class="actions">
-        <button id="btnDlYear">下載本年 JSON</button>
-        <button id="btnDlAll">下載全部 JSON</button>
-      </div>
+      <button id="btnDlYear">下載本年 JSON</button>
+      <button id="btnDlAll">下載全部 JSON</button>
       <span id="problemBadge" class="pill">—</span>
     </div>
   </div>
 
-  <div class="wrap">
-    <!-- =====================  Calendar  ===================== -->
-    <section class="panel">
-      <div class="cal-head">
-        <div class="title" id="calTitle2">—</div>
-        <div class="muted">點格子可在右側列表編輯</div>
-      </div>
-      <div class="cal-grid" id="calGrid"></div>
-    </section>
+  <!-- 月曆 -->
+  <section class="panel">
+    <div class="cal-head">
+      <div id="calTitle2" style="font-weight:700">—</div>
+      <div class="muted">點格子可在下面「年度列表」編輯</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </section>
 
-    <!-- =====================  Editor  ===================== -->
-    <section class="panel">
-      <div class="flex mb8">
+  <!-- 年度列表：移到月曆底部，並加 show/hide -->
+  <section class="panel">
+    <details id="editorBox">
+      <summary class="flex mb8" id="editorSummary">
         <strong>年度列表 / 編輯</strong>
         <span class="pill" id="yearCount">—</span>
         <span class="pill" id="statCount">—</span>
-      </div>
+        <button type="button" id="toggleEditor" class="hide"></button>
+      </summary>
 
-      <div class="actions mb8">
-        <label class="flex" style="gap:6px">
-          <input type="checkbox" id="chkAll" />
-          全選
-        </label>
+      <div class="flex mb8">
+        <label class="flex" style="gap:6px"><input type="checkbox" id="chkAll"> 全選</label>
         <button id="btnDel">刪除勾選</button>
         <button id="btnAdd">新增假期</button>
       </div>
@@ -197,451 +150,194 @@
           <tbody id="tbody"></tbody>
         </table>
       </div>
-    </section>
-  </div>
+    </details>
+  </section>
 
   <script>
-    // ===================== Utils & Theme =====================
-    const $ = (s, el=document) => el.querySelector(s);
-    const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
-    const THEME_KEY = 'hk_holidays_theme';
+    /* ========= helpers & theme ========= */
+    const $=(s,el=document)=>el.querySelector(s); const $$=(s,el=document)=>Array.from(el.querySelectorAll(s));
+    const THEME_KEY='hk_holidays_theme'; const LANG_KEY='hk_lang', TYPE_KEY='hk_type', EDITOR_KEY='hk_editor_open';
 
-    function getSystemPrefers(){
-      return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
-    }
-    function applyTheme(mode){
-      const finalMode = (mode === 'auto') ? getSystemPrefers() : mode;
-      document.documentElement.setAttribute('data-theme', finalMode);
-      $('#themeBadge').textContent = `主題：${finalMode}`;
-    }
-    function initThemeUI(){
-      const sel = $('#themeSelect');
-      const saved = localStorage.getItem(THEME_KEY) || 'auto';
-      sel.value = saved; applyTheme(saved);
-      sel.addEventListener('change', ()=>{
-        const v = sel.value;
-        localStorage.setItem(THEME_KEY, v);
-        applyTheme(v);
-      });
-      if (window.matchMedia){
-        const mq = window.matchMedia('(prefers-color-scheme: dark)');
-        mq.addEventListener?.('change', ()=>{
-          if ((localStorage.getItem(THEME_KEY) || 'auto') === 'auto') applyTheme('auto');
-        });
-        mq.addListener?.(()=>{ if ((localStorage.getItem(THEME_KEY) || 'auto') === 'auto') applyTheme('auto'); });
-      }
+    function getSystemPref(){return matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+    function applyTheme(m){const f=(m==='auto')?getSystemPref():m;document.documentElement.setAttribute('data-theme',f);$('#themeBadge').textContent='主題：'+f}
+    function initTheme(){
+      const sel=$('#themeSelect'); const saved=localStorage.getItem(THEME_KEY)||'auto';
+      sel.value=saved; applyTheme(saved);
+      sel.onchange=()=>{localStorage.setItem(THEME_KEY, sel.value); applyTheme(sel.value);}
+      const mq=matchMedia('(prefers-color-scheme: dark)'); mq.addEventListener?.('change',()=>{ if((localStorage.getItem(THEME_KEY)||'auto')==='auto') applyTheme('auto')});
     }
 
-    // ===================== Data Model =====================
-    /** 統一資料格式：{ date:"YYYY-MM-DD", name_zh:"", name_en:"", statutory:boolean } */
-    let DATA = {};                       // { [year]: Holiday[] }
-    const YEARS = Array.from({length: 10}, (_,i)=>2017+i); // 2017–2026
-    let CUR = { y: new Date().getFullYear(), m: new Date().getMonth() }; // m: 0-11
-    const LANG_KEY='hk_lang', TYPE_KEY='hk_type';
-    const SELECTED = new Set();
+    /* ========= data ========= */
+    let DATA={}; const YEARS=Array.from({length:10},(_,i)=>2017+i);
+    let CUR={y:new Date().getFullYear(), m:new Date().getMonth()};
+    const SELECTED=new Set(); const DOW=['日','一','二','三','四','五','六'];
 
-    function setStatus(msg){ $('#loadInfo').textContent = msg; }
-
-    function normalizeIncoming(raw){
-      // 支援：陣列 或 {year:[]}
-      let map = {};
-      if (Array.isArray(raw)){
-        for (const r of raw){
-          const y = Number((r.date||'').slice(0,4));
-          if (!y) continue;
-          (map[y] ||= []).push({
-            date: r.date,
-            name_zh: r.name_zh || r.zh || r.nameZh || '',
-            name_en: r.name_en || r.en || r.nameEn || r.title || r.summary || '',
-            statutory: !!(r.statutory ?? r.is_statutory ?? r.isStatutory ?? r.stat)
-          });
+    function setStatus(t){$('#loadInfo').textContent=t}
+    function normalize(raw){
+      const map={};
+      if(Array.isArray(raw)){
+        for(const r of raw){const y=+(r.date||'').slice(0,4); if(!y) continue;
+          (map[y] ||= []).push({date:r.date,name_zh:r.name_zh||r.zh||r.nameZh||'',name_en:r.name_en||r.en||r.nameEn||r.title||r.summary||'',statutory:!!(r.statutory??r.is_statutory??r.isStatutory??r.stat)});
         }
-      } else if (raw && typeof raw === 'object'){
-        for (const [y, arr] of Object.entries(raw)){
-          map[y] = (arr||[]).map(r => ({
-            date: r.date,
-            name_zh: r.name_zh || r.zh || r.nameZh || '',
-            name_en: r.name_en || r.en || r.nameEn || r.title || r.summary || '',
-            statutory: !!(r.statutory ?? r.is_statutory ?? r.isStatutory ?? r.stat)
-          }));
-        }
+      }else if(raw&&typeof raw==='object'){
+        for(const [y,arr] of Object.entries(raw)){ map[y]=(arr||[]).map(r=>({date:r.date,name_zh:r.name_zh||r.zh||'',name_en:r.name_en||r.en||r.title||r.summary||'',statutory:!!(r.statutory??r.is_statutory)})); }
       }
-      for (const y of Object.keys(map)){ map[y].sort((a,b)=> a.date.localeCompare(b.date)); }
+      for(const y of Object.keys(map)) map[y].sort((a,b)=>a.date.localeCompare(b.date));
       return map;
     }
-
-    async function loadDefaultJson(){
+    async function loadDefault(){
       try{
-        const res = await fetch('./hk_holidays_2017_2026.json', {cache:'no-store'});
-        if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
-        const raw = await res.json();
-        DATA = normalizeIncoming(raw);
-        setStatus('已載入本地 JSON');
-      }catch(e){
-        // fallback: minimal sample for 2025
-        DATA = {
-          2025: [
-            {date:'2025-01-01', name_zh:'元旦', name_en:'The first day of January', statutory:true},
-            {date:'2025-10-01', name_zh:'國慶日', name_en:'National Day', statutory:true},
-            {date:'2025-12-25', name_zh:'聖誕節', name_en:'Christmas Day', statutory:false},
-          ]
-        };
+        const r=await fetch('./hk_holidays_2017_2026.json',{cache:'no-store'}); if(!r.ok) throw 0;
+        DATA=normalize(await r.json()); setStatus('已載入本地 JSON');
+      }catch{
+        DATA={2025:[{date:'2025-01-01',name_zh:'元旦',name_en:'The first day of January',statutory:true}]};
         setStatus('已載入內建示例（找不到本地 JSON）');
       }
     }
 
-    // ===================== 1823 Sync (data.gov.hk) =====================
-    // 主要抓 en.json；嘗試抓 zh.json（若 404/失敗則忽略），最後按日期合併雙語
+    /* ========= 1823 sync (with optional proxy) ========= */
     async function sync1823(){
-      const enUrl = 'https://www.1823.gov.hk/common/ical/en.json';
-      const zhUrl = 'https://www.1823.gov.hk/common/ical/zh.json'; // 有時候不存在，嘗試即可
+      const proxy=($('#proxy').value||'').trim();
+      const en='https://www.1823.gov.hk/common/ical/en.json';
+      const zh='https://www.1823.gov.hk/common/ical/zh.json';
+      const wrap=u=>proxy?proxy+u:u;
+
       setStatus('同步中（1823）…');
-
       try{
-        const [enRes, zhRes] = await Promise.allSettled([ fetch(enUrl), fetch(zhUrl) ]);
-        if (enRes.status !== 'fulfilled' || !enRes.value.ok){
-          throw new Error('無法取得 1823 en.json');
+        const [re,rz]=await Promise.allSettled([fetch(wrap(en)), fetch(wrap(zh))]);
+        if(re.status!=='fulfilled' || !re.value.ok) throw new Error('無法取得 1823 en.json（可能 CORS/來源不可用）');
+        const enArr=await re.value.json();
+        let zhArr=[]; if(rz.status==='fulfilled'&&rz.value.ok){ try{zhArr=await rz.value.json()}catch{} }
+
+        const zhMap=new Map(zhArr.map(e=>[String(e.dtstart).slice(0,10), e]));
+        const merged={};
+        for(const e of enArr){
+          const d=String(e.dtstart).slice(0,10); const y=+d.slice(0,4);
+          const peer=zhMap.get(d);
+          (merged[y] ||= []).push({date:d,name_en:e.summary||'',name_zh:peer?.summary||peer?.summary_zh||'',statutory:false});
         }
-        const enArr = await enRes.value.json();
+        for(const y of Object.keys(merged)) merged[y].sort((a,b)=>a.date.localeCompare(b.date));
+        DATA=merged;
 
-        let zhArr = [];
-        if (zhRes.status === 'fulfilled' && zhRes.value.ok){
-          try { zhArr = await zhRes.value.json(); }
-          catch { zhArr = []; }
-        } // 否則就只用英文
-
-        // 依日期合併雙語
-        const zhByDate = new Map(zhArr.map(ev => [String(ev.dtstart).slice(0,10), ev]));
-        const merged = {};
-        for (const ev of enArr){
-          const d = String(ev.dtstart).slice(0,10);
-          const y = +d.slice(0,4);
-          const peer = zhByDate.get(d);
-          const name_en = ev.summary || '';
-          const name_zh = peer?.summary || peer?.summary_zh || '';
-          (merged[y] ??= []).push({ date:d, name_en, name_zh, statutory:false });
-        }
-        // 排序
-        for (const y of Object.keys(merged)){ merged[y].sort((a,b)=> a.date.localeCompare(b.date)); }
-
-        DATA = merged;
-        CUR.y = Math.min(Math.max(CUR.y, Math.min(...Object.keys(merged).map(Number))), Math.max(...Object.keys(merged).map(Number)));
-        setStatus('已同步 1823（一般公眾假期）。勞工假期標記可於右側勾選調整。');
+        const ys=Object.keys(DATA).map(Number).sort((a,b)=>a-b);
+        if(ys.length && !ys.includes(CUR.y)) CUR.y=ys[0];
+        setStatus(`已同步 1823（${proxy?'透過 Proxy':'直連'}）`);
         renderAll();
       }catch(err){
         console.error(err);
-        setStatus('同步 1823 失敗（可能 CORS 或來源不可用）');
+        setStatus('同步 1823 失敗（可嘗試填 CORS Proxy 後再試）');
       }
     }
 
-    // ===================== Calendar =====================
-    const DOW = ['日','一','二','三','四','五','六'];
-
+    /* ========= calendar ========= */
     function renderCalendar(){
-      const y = CUR.y, m = CUR.m;
-      const title = `${y} 年 ${m+1} 月`;
-      $('#calTitle').textContent = title;
-      $('#calTitle2').textContent = title;
+      const y=CUR.y, m=CUR.m, title=`${y} 年 ${m+1} 月`;
+      $('#calTitle').textContent=title; $('#calTitle2').textContent=title;
+      const g=$('#calGrid'); g.innerHTML='';
+      for(const d of DOW){const el=document.createElement('div'); el.className='dow'; el.textContent=d; g.appendChild(el);}
 
-      const grid = $('#calGrid');
-      grid.innerHTML = '';
-      // header DOW
-      for (let i=0;i<7;i++){
-        const h = document.createElement('div');
-        h.className = 'dow';
-        h.textContent = DOW[i];
-        grid.appendChild(h);
-      }
-
-      // dates
-      const first = new Date(y, m, 1);
-      const startIdx = first.getDay();
-      const daysInMonth = new Date(y, m+1, 0).getDate();
-      const prevDays = startIdx;
-      const prevMonthDays = new Date(y, m, 0).getDate();
-
-      // gather holiday map
-      const lang = (localStorage.getItem(LANG_KEY)||'zh');
-      const type = (localStorage.getItem(TYPE_KEY)||'all');
-      const arr = (DATA[y]||[]);
-      const hmap = new Map(arr.map(h=>[h.date,h]));
-
-      const totalCells = 7*6;
-      for (let i=0;i<totalCells;i++){
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        let d, mm = m, yy = y, dim=false;
-
-        if (i < prevDays){
-          d = prevMonthDays - prevDays + 1 + i;
-          mm = m-1; if (mm<0){mm=11; yy=y-1;}
-          dim = true;
-        }else if (i >= prevDays + daysInMonth){
-          d = i - (prevDays + daysInMonth) + 1;
-          mm = m+1; if (mm>11){mm=0; yy=y+1;}
-          dim = true;
-        }else{
-          d = i - prevDays + 1;
-        }
-
-        const dateStr = `${yy}-${String(mm+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const dEl = document.createElement('div');
-        dEl.className = 'd';
-        dEl.textContent = String(d);
-        cell.appendChild(dEl);
-
-        const h = hmap.get(dateStr);
-        if (h && (type==='all' || (type==='stat' && h.statutory))){
-          const hl = document.createElement('div');
-          hl.className = 'hl';
-          const name = (lang==='zh') ? h.name_zh
-                    : (lang==='en') ? h.name_en
-                    : `${h.name_zh || ''}${(h.name_zh&&h.name_en)?' / ':''}${h.name_en||''}`;
-          hl.innerHTML = `<span class="name">${name || '(未命名)'}</span>` +
-                         (h.statutory ? `<span class="stat">STAT</span>`:'');
+      const first=new Date(y,m,1), start=first.getDay(), days=new Date(y,m+1,0).getDate(), prevDays=start, prevMonthDays=new Date(y,m,0).getDate();
+      const lang=localStorage.getItem(LANG_KEY)||'zh', type=localStorage.getItem(TYPE_KEY)||'all';
+      const map=new Map((DATA[y]||[]).map(h=>[h.date,h]));
+      for(let i=0;i<42;i++){
+        const cell=document.createElement('div'); cell.className='cell';
+        let d,yy=y,mm=m,dim=false;
+        if(i<prevDays){d=prevMonthDays-prevDays+1+i; mm=m-1; if(mm<0){mm=11;yy=y-1} dim=true}
+        else if(i>=prevDays+days){d=i-(prevDays+days)+1; mm=m+1; if(mm>11){mm=0;yy=y+1} dim=true}
+        else{d=i-prevDays+1}
+        const date=`${yy}-${String(mm+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const dEl=document.createElement('div'); dEl.className='d'; dEl.textContent=d; cell.appendChild(dEl);
+        const h=map.get(date);
+        if(h && (type==='all' || (type==='stat'&&h.statutory))){
+          const name=(lang==='zh')?h.name_zh:(lang==='en')?h.name_en:`${h.name_zh||''}${(h.name_zh&&h.name_en)?' / ':''}${h.name_en||''}`;
+          const hl=document.createElement('div'); hl.className='hl';
+          hl.innerHTML=`<span class="name">${name||'(未命名)'}</span>${h.statutory?'<span class="stat">STAT</span>':''}`;
           cell.appendChild(hl);
         }
-
-        if (dim) cell.classList.add('dim');
-        cell.addEventListener('click', ()=>{ focusOrAdd(dateStr); });
-        grid.appendChild(cell);
+        if(dim) cell.classList.add('dim');
+        cell.addEventListener('click',()=>focusOrAdd(date));
+        g.appendChild(cell);
       }
     }
 
-    // ===================== Editor =====================
-    function refreshYearSelectors(){
-      const yearSel = $('#yearSel');
-      // 用現有 DATA 年份生成，否則用預設 2017–2026
-      const ys = Object.keys(DATA).map(n=>Number(n)).sort((a,b)=>a-b);
-      const source = ys.length ? ys : YEARS;
-      yearSel.innerHTML = source.map(y=>`<option value="${y}">${y}</option>`).join('');
-      if (!source.includes(CUR.y)) CUR.y = source[0];
-      yearSel.value = CUR.y;
+    /* ========= editor ========= */
+    function refreshYearSel(){
+      const ys=Object.keys(DATA).map(Number).sort((a,b)=>a-b); const source=ys.length?ys:YEARS;
+      const ysel=$('#yearSel'); ysel.innerHTML=source.map(y=>`<option value="${y}">${y}</option>`).join('');
+      if(!source.includes(CUR.y)) CUR.y=source[0]; ysel.value=CUR.y;
     }
-
     function renderEditor(){
-      const y = CUR.y;
-      const list = (DATA[y]||[]).slice();
-      const type = (localStorage.getItem(TYPE_KEY)||'all');
-      const tbody = $('#tbody');
-      tbody.innerHTML = '';
+      const y=CUR.y, list=(DATA[y]||[]).slice(), type=localStorage.getItem(TYPE_KEY)||'all', tb=$('#tbody'); tb.innerHTML='';
+      for(const h of list){
+        if(type==='stat' && !h.statutory) continue;
+        const tr=document.createElement('tr'); tr.dataset.date=h.date;
 
-      let statN=0;
-      for (const h of list){
-        if (type==='stat' && !h.statutory) continue;
-        if (h.statutory) statN++;
+        const tdChk=document.createElement('td'); const cb=document.createElement('input'); cb.type='checkbox'; cb.checked=SELECTED.has(h.date);
+        cb.onchange=()=>{ cb.checked?SELECTED.add(h.date):SELECTED.delete(h.date); syncMaster() }; tdChk.appendChild(cb); tr.appendChild(tdChk);
 
-        const tr = document.createElement('tr');
-        tr.dataset.date = h.date;
-
-        // checkbox
-        const tdChk = document.createElement('td');
-        const chk = document.createElement('input'); chk.type='checkbox';
-        chk.checked = SELECTED.has(h.date);
-        chk.addEventListener('change', ()=>{
-          if (chk.checked) SELECTED.add(h.date); else SELECTED.delete(h.date);
-          syncMasterCheckbox();
-        });
-        tdChk.appendChild(chk); tr.appendChild(tdChk);
-
-        // date
-        const tdDate = document.createElement('td');
-        const inDate = document.createElement('input'); inDate.type='date'; inDate.value = h.date;
-        inDate.addEventListener('change', ()=>{
-          const idx = DATA[y].findIndex(x=>x.date===h.date);
-          if (idx>=0){
-            const newDate = inDate.value;
-            DATA[y][idx].date = newDate;
-            SELECTED.delete(h.date);
-            h.date = newDate;
-            tr.dataset.date = newDate;
-            SELECTED.add(newDate);
-            sortYear(y);
-            renderAll();
-          }
-        });
+        const tdDate=document.createElement('td'); const inDate=document.createElement('input'); inDate.type='date'; inDate.value=h.date;
+        inDate.onchange=()=>{ const idx=DATA[y].findIndex(x=>x.date===h.date); if(idx>=0){const nd=inDate.value; DATA[y][idx].date=nd; SELECTED.delete(h.date); h.date=nd; tr.dataset.date=nd; SELECTED.add(nd); sortYear(y); renderAll(); } }
         tdDate.appendChild(inDate); tr.appendChild(tdDate);
 
-        // zh
-        const tdZh = document.createElement('td');
-        const inZh = document.createElement('input'); inZh.type='text'; inZh.className='grow'; inZh.value = h.name_zh||'';
-        inZh.addEventListener('input', ()=>{ h.name_zh = inZh.value; checkProblems(); renderCalendar(); });
-        tdZh.appendChild(inZh); tr.appendChild(tdZh);
+        const tdZh=document.createElement('td'); const inZh=document.createElement('input'); inZh.type='text'; inZh.className='grow'; inZh.value=h.name_zh||''; inZh.oninput=()=>{h.name_zh=inZh.value; checkProblems(); renderCalendar();}; tdZh.appendChild(inZh); tr.appendChild(tdZh);
 
-        // en
-        const tdEn = document.createElement('td');
-        const inEn = document.createElement('input'); inEn.type='text'; inEn.className='grow'; inEn.value = h.name_en||'';
-        inEn.addEventListener('input', ()=>{ h.name_en = inEn.value; checkProblems(); renderCalendar(); });
-        tdEn.appendChild(inEn); tr.appendChild(tdEn);
+        const tdEn=document.createElement('td'); const inEn=document.createElement('input'); inEn.type='text'; inEn.className='grow'; inEn.value=h.name_en||''; inEn.oninput=()=>{h.name_en=inEn.value; checkProblems(); renderCalendar();}; tdEn.appendChild(inEn); tr.appendChild(tdEn);
 
-        // statutory
-        const tdStat = document.createElement('td');
-        const inStat = document.createElement('input'); inStat.type='checkbox'; inStat.checked = !!h.statutory;
-        inStat.addEventListener('change', ()=>{ h.statutory = inStat.checked; renderCalendar(); updateCounts(); });
-        tdStat.appendChild(inStat); tr.appendChild(tdStat);
+        const tdS=document.createElement('td'); const inS=document.createElement('input'); inS.type='checkbox'; inS.checked=!!h.statutory; inS.onchange=()=>{h.statutory=inS.checked; renderCalendar(); updateCounts();}; tdS.appendChild(inS); tr.appendChild(tdS);
 
-        tbody.appendChild(tr);
+        tb.appendChild(tr);
       }
+      updateCounts(); syncMaster();
+    }
+    function sortYear(y){(DATA[y]||[]).sort((a,b)=>a.date.localeCompare(b.date))}
+    function syncMaster(){const rows=$$('#tbody tr'); const all=rows.length && rows.every(tr=>SELECTED.has(tr.dataset.date)); $('#chkAll').checked=all; $('#chkAll2').checked=all;}
+    function setMaster(){ for(const id of ['chkAll','chkAll2']) $('#'+id).onchange=e=>{ const on=e.target.checked; for(const tr of $$('#tbody tr')){const d=tr.dataset.date; const cb=$('input[type="checkbox"]',tr); cb.checked=on; on?SELECTED.add(d):SELECTED.delete(d);} syncMaster(); } }
 
-      updateCounts();
-      syncMasterCheckbox();
+    function focusOrAdd(date){
+      const tr=$(`#tbody tr[data-date="${date}"]`);
+      if(tr){ tr.scrollIntoView({behavior:'smooth',block:'center'}); $('#editorBox').open=true; localStorage.setItem(EDITOR_KEY,'1'); tr.style.outline=`2px solid ${getComputedStyle(document.documentElement).getPropertyValue('--accent')}`; setTimeout(()=>tr.style.outline='none',900) }
+      else{ const y=+date.slice(0,4); (DATA[y] ||= []).push({date,name_zh:'（請輸入）',name_en:'(enter name)',statutory:false}); sortYear(y); CUR.y=y; $('#yearSel').value=y; renderAll(); $('#editorBox').open=true; localStorage.setItem(EDITOR_KEY,'1'); }
     }
 
-    function sortYear(y){ (DATA[y]||[]).sort((a,b)=> a.date.localeCompare(b.date)); }
+    function updateCounts(){ const y=CUR.y, arr=(DATA[y]||[]); $('#yearCount').textContent=`本年共 ${arr.length} 筆`; $('#statCount').textContent=`Stat: ${arr.filter(h=>h.statutory).length}`; }
+    function checkProblems(){ let zh=0,en=0; for(const y of Object.keys(DATA)) for(const h of (DATA[y]||[])){ if(!h.name_zh) zh++; if(!h.name_en) en++; } if(zh||en){$('#problemBadge').textContent=`資料缺漏：中文 ${zh} / 英文 ${en}`; $('#problemBadge').classList.add('problems'); $('#problemBadge').classList.remove('ok')} else {$('#problemBadge').textContent='資料完整'; $('#problemBadge').classList.add('ok'); $('#problemBadge').classList.remove('problems')} }
 
-    function syncMasterCheckbox(){
-      const visibleRows = $$('#tbody tr');
-      const allChecked = visibleRows.length && visibleRows.every(tr => SELECTED.has(tr.dataset.date));
-      $('#chkAll').checked = allChecked;
-      $('#chkAll2').checked = allChecked;
+    function persistUi(){ $('#langSel').value=localStorage.getItem(LANG_KEY)||'zh'; $('#typeSel').value=localStorage.getItem(TYPE_KEY)||'all'; const open=localStorage.getItem(EDITOR_KEY)!=='0'; $('#editorBox').open=open; }
+    function renderAll(){ refreshYearSel(); persistUi(); updateCounts(); checkProblems(); renderCalendar(); renderEditor(); }
+
+    /* ========= io / buttons ========= */
+    function dl(obj, name){ const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},0); }
+
+    function bindButtons(){
+      $('#btnPrev').onclick=()=>{ CUR.m--; if(CUR.m<0){CUR.m=11;CUR.y--; $('#yearSel').value=CUR.y;} renderCalendar(); }
+      $('#btnNext').onclick=()=>{ CUR.m++; if(CUR.m>11){CUR.m=0;CUR.y++; $('#yearSel').value=CUR.y;} renderCalendar(); }
+      $('#yearSel').onchange=()=>{ CUR.y=+$('#yearSel').value; renderAll(); }
+      $('#langSel').onchange=()=>{ localStorage.setItem(LANG_KEY,$('#langSel').value); renderCalendar(); renderEditor(); }
+      $('#typeSel').onchange=()=>{ localStorage.setItem(TYPE_KEY,$('#typeSel').value); renderCalendar(); renderEditor(); }
+
+      $('#btnAdd').onclick=()=>{ const y=CUR.y; const date=`${y}-${String(CUR.m+1).padStart(2,'0')}-01`; (DATA[y] ||= []).push({date,name_zh:'（請輸入）',name_en:'(enter name)',statutory:false}); sortYear(y); renderAll(); focusOrAdd(date); }
+      $('#btnDel').onclick=()=>{ const y=CUR.y; DATA[y]=(DATA[y]||[]).filter(h=>!SELECTED.has(h.date)); SELECTED.clear(); renderAll(); }
+
+      $('#btnDlYear').onclick=()=>dl({[CUR.y]:DATA[CUR.y]||[]}, `hk_holidays_${CUR.y}.json`);
+      $('#btnDlAll').onclick=()=>dl(DATA, `hk_holidays_2017_2026.json`);
+
+      $('#btnLoadLocal').onclick=()=>$('#fileInp').click();
+      $('#fileInp').onchange=async e=>{ const f=e.target.files?.[0]; if(!f) return; try{ const json=JSON.parse(await f.text()); DATA=normalize(json); setStatus('已載入本地 JSON'); renderAll(); }catch(err){ alert('JSON 解析失敗：'+err.message);} finally{e.target.value=''} };
+
+      $('#btnSync').onclick=sync1823;
+
+      // 展收狀態記憶
+      $('#editorBox').addEventListener('toggle',()=>{ localStorage.setItem(EDITOR_KEY, $('#editorBox').open?'1':'0'); });
+      setMaster();
     }
 
-    function setMasterHandlers(){
-      for (const id of ['chkAll','chkAll2']){
-        $('#'+id).addEventListener('change', (e)=>{
-          const checked = e.target.checked;
-          for (const tr of $$('#tbody tr')){
-            const date = tr.dataset.date;
-            const cb = $('input[type="checkbox"]', tr);
-            cb.checked = checked;
-            if (checked) SELECTED.add(date); else SELECTED.delete(date);
-          }
-          syncMasterCheckbox();
-        });
-      }
-    }
-
-    function btnHandlers(){
-      $('#btnDel').addEventListener('click', ()=>{
-        const y = CUR.y;
-        DATA[y] = (DATA[y]||[]).filter(h => !SELECTED.has(h.date));
-        SELECTED.clear();
-        renderAll();
-      });
-
-      $('#btnAdd').addEventListener('click', ()=>{
-        const y = CUR.y;
-        const date = `${y}-${String(CUR.m+1).padStart(2,'0')}-01`;
-        (DATA[y] ||= []).push({date, name_zh:'（請輸入）', name_en:'(enter name)', statutory:false});
-        sortYear(y);
-        renderAll();
-        focusOrAdd(date);
-      });
-
-      $('#btnPrev').addEventListener('click', ()=>{
-        CUR.m -= 1; if (CUR.m < 0){ CUR.m=11; CUR.y -= 1; $('#yearSel').value = CUR.y; }
-        renderCalendar();
-      });
-      $('#btnNext').addEventListener('click', ()=>{
-        CUR.m += 1; if (CUR.m > 11){ CUR.m=0; CUR.y += 1; $('#yearSel').value = CUR.y; }
-        renderCalendar();
-      });
-
-      $('#yearSel').addEventListener('change', ()=>{ CUR.y = Number($('#yearSel').value); renderAll(); });
-      $('#langSel').addEventListener('change', ()=>{ localStorage.setItem(LANG_KEY, $('#langSel').value); renderCalendar(); renderEditor(); });
-      $('#typeSel').addEventListener('change', ()=>{ localStorage.setItem(TYPE_KEY, $('#typeSel').value); renderCalendar(); renderEditor(); });
-
-      $('#btnDlYear').addEventListener('click', ()=>{
-        const y = CUR.y;
-        downloadJSON({[y]: DATA[y]||[]}, `hk_holidays_${y}.json`);
-      });
-      $('#btnDlAll').addEventListener('click', ()=>{ downloadJSON(DATA, `hk_holidays_2017_2026.json`); });
-
-      $('#btnLoadLocal').addEventListener('click', ()=> $('#fileInp').click());
-      $('#fileInp').addEventListener('change', async (e)=>{
-        const file = e.target.files?.[0]; if (!file) return;
-        try{
-          const txt = await file.text();
-          const json = JSON.parse(txt);
-          DATA = normalizeIncoming(json);
-          setStatus('已載入本地 JSON');
-          renderAll();
-        }catch(err){ alert('JSON 解析失敗：' + err.message); }
-        finally{ e.target.value = ''; }
-      });
-
-      $('#btnSync').addEventListener('click', sync1823);
-    }
-
-    function focusOrAdd(dateStr){
-      const tr = $(`#tbody tr[data-date="${dateStr}"]`);
-      if (tr){
-        tr.scrollIntoView({behavior:'smooth', block:'center'});
-        tr.style.outline = `2px solid ${getComputedStyle(document.documentElement).getPropertyValue('--accent')}`;
-        setTimeout(()=>{ tr.style.outline='none'; }, 1000);
-      }else{
-        const y = Number(dateStr.slice(0,4));
-        (DATA[y] ||= []).push({date:dateStr, name_zh:'（請輸入）', name_en:'(enter name)', statutory:false});
-        sortYear(y);
-        CUR.y = y; $('#yearSel').value = y;
-        renderAll();
-      }
-    }
-
-    function updateCounts(){
-      const y = CUR.y;
-      const arr = (DATA[y]||[]);
-      const statN = arr.filter(h=>h.statutory).length;
-      $('#yearCount').textContent = `本年共 ${arr.length} 筆`;
-      $('#statCount').textContent = `Stat: ${statN}`;
-    }
-
-    function checkProblems(){
-      let missingZh=0, missingEn=0;
-      for (const y of Object.keys(DATA)){
-        for (const h of (DATA[y]||[])){
-          if (!h.name_zh) missingZh++;
-          if (!h.name_en) missingEn++;
-        }
-      }
-      if (missingZh || missingEn){
-        $('#problemBadge').textContent = `資料缺漏：中文 ${missingZh} / 英文 ${missingEn}`;
-        $('#problemBadge').classList.remove('ok');
-        $('#problemBadge').classList.add('problems');
-      }else{
-        $('#problemBadge').textContent = '資料完整';
-        $('#problemBadge').classList.add('ok');
-        $('#problemBadge').classList.remove('problems');
-      }
-    }
-
-    function downloadJSON(obj, filename){
-      const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click();
-      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 0);
-    }
-
-    function persistUiFromLocal(){
-      const lang = localStorage.getItem(LANG_KEY) || 'zh';
-      const type = localStorage.getItem(TYPE_KEY) || 'all';
-      $('#langSel').value = lang;
-      $('#typeSel').value = type;
-    }
-
-    function renderAll(){
-      refreshYearSelectors();
-      persistUiFromLocal();
-      updateCounts();
-      checkProblems();
-      renderCalendar();
-      renderEditor();
-    }
-
-    // ===================== Boot =====================
+    /* ========= boot ========= */
     (async function boot(){
-      initThemeUI();
-      await loadDefaultJson();
-      // 年份校正
-      const ys = Object.keys(DATA).map(n=>Number(n)).sort((a,b)=>a-b);
-      if (ys.length && !ys.includes(CUR.y)) CUR.y = ys[0];
-      refreshYearSelectors();
-      persistUiFromLocal();
-      setMasterHandlers();
-      btnHandlers();
-      renderAll();
+      initTheme();
+      await loadDefault();
+      const ys=Object.keys(DATA).map(Number).sort((a,b)=>a-b);
+      if(ys.length && !ys.includes(CUR.y)) CUR.y=ys[0];
+      bindButtons(); renderAll();
     })();
   </script>
 </body>
