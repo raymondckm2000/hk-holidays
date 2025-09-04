@@ -8,23 +8,23 @@
   <style>
     :root{
       color-scheme: light;
-      --bg:#f7f9fc; --panel:#ffffff; --text:#102a43; --muted:#486581;
-      --accent:#1f6feb; --ok:#2e7d32; --warn:#b26a00; --bad:#c62828;
-      --surface:#ffffff; --border:#d6e0ef; --input:#f1f5fb;
-      --holiday:#e91e63; --stat:#0aa86f;
+      --bg:#f0f4f8; --panel:#ffffff; --text:#102a43; --muted:#627d98;
+      --accent:#3b82f6; --ok:#2e7d32; --warn:#c08400; --bad:#e53935;
+      --surface:#ffffff; --border:#d6e0ef; --input:#eef2f7;
+      --holiday:#ec4899; --stat:#10b981;
     }
     html[data-theme="dark"]{
       color-scheme: dark;
-      --bg:#0b1522; --panel:#0f1622; --text:#e9eef6; --muted:#9bb1c9;
-      --accent:#2ea3ff; --ok:#2ecc71; --warn:#f7c948; --bad:#e74c3c;
-      --surface:#101b2b; --border:#223146; --input:#0b1522;
-      --holiday:#ff6ea8; --stat:#49d1a1;
+      --bg:#0f172a; --panel:#1e293b; --text:#e2e8f0; --muted:#94a3b8;
+      --accent:#60a5fa; --ok:#34d399; --warn:#fbbf24; --bad:#f87171;
+      --surface:#1e293b; --border:#334155; --input:#0f172a;
+      --holiday:#fb7185; --stat:#34d399;
     }
     *{box-sizing:border-box}
-    body{margin:0;padding:16px;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","PingFang TC","Hiragino Sans","Microsoft JhengHei",Arial,sans-serif;line-height:1.5}
+    body{margin:0;padding:16px;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","PingFang TC","Hiragino Sans","Microsoft JhengHei",Arial,sans-serif;line-height:1.5;transition:background .3s,color .3s}
     a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
     header{margin-bottom:16px}
-    .panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:0 6px 18px rgba(0,0,0,.06);transition:background .3s,border-color .3s}
     .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
     .row label{color:var(--muted);min-width:76px}
     select,input[type="date"],input[type="text"]{background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:8px;height:36px;padding:6px 10px}
@@ -120,8 +120,14 @@
     <div class="cal-grid" id="calGrid"></div>
   </section>
 
-  <!-- 年度列表：移到月曆底部，並加 show/hide -->
-  <section class="panel">
+  <div class="row" style="justify-content:flex-end">
+    <label class="flex" style="gap:6px;align-items:center;min-width:auto">
+      <input type="checkbox" id="chkListToggle" checked /> 顯示年度列表
+    </label>
+  </div>
+
+  <!-- 年度列表：置於月曆底部，並可開關顯示 -->
+  <section id="yearListSection" class="panel">
     <details id="editorBox">
       <summary class="flex mb8" id="editorSummary">
         <strong>年度列表 / 編輯</strong>
@@ -156,7 +162,7 @@
   <script>
     /* ========= helpers & theme ========= */
     const $=(s,el=document)=>el.querySelector(s); const $$=(s,el=document)=>Array.from(el.querySelectorAll(s));
-    const THEME_KEY='hk_holidays_theme'; const LANG_KEY='hk_lang', TYPE_KEY='hk_type', EDITOR_KEY='hk_editor_open';
+    const THEME_KEY='hk_holidays_theme'; const LANG_KEY='hk_lang', TYPE_KEY='hk_type', EDITOR_KEY='hk_editor_open', LIST_KEY='hk_list_show';
 
     function getSystemPref(){return matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
     function applyTheme(m){const f=(m==='auto')?getSystemPref():m;document.documentElement.setAttribute('data-theme',f);$('#themeBadge').textContent='主題：'+f}
@@ -302,7 +308,15 @@
     function updateCounts(){ const y=CUR.y, arr=(DATA[y]||[]); $('#yearCount').textContent=`本年共 ${arr.length} 筆`; $('#statCount').textContent=`Stat: ${arr.filter(h=>h.statutory).length}`; }
     function checkProblems(){ let zh=0,en=0; for(const y of Object.keys(DATA)) for(const h of (DATA[y]||[])){ if(!h.name_zh) zh++; if(!h.name_en) en++; } if(zh||en){$('#problemBadge').textContent=`資料缺漏：中文 ${zh} / 英文 ${en}`; $('#problemBadge').classList.add('problems'); $('#problemBadge').classList.remove('ok')} else {$('#problemBadge').textContent='資料完整'; $('#problemBadge').classList.add('ok'); $('#problemBadge').classList.remove('problems')} }
 
-    function persistUi(){ $('#langSel').value=localStorage.getItem(LANG_KEY)||'zh'; $('#typeSel').value=localStorage.getItem(TYPE_KEY)||'all'; const open=localStorage.getItem(EDITOR_KEY)!=='0'; $('#editorBox').open=open; }
+    function persistUi(){
+      $('#langSel').value=localStorage.getItem(LANG_KEY)||'zh';
+      $('#typeSel').value=localStorage.getItem(TYPE_KEY)||'all';
+      const open=localStorage.getItem(EDITOR_KEY)!=='0';
+      $('#editorBox').open=open;
+      const showList=localStorage.getItem(LIST_KEY)!=='0';
+      $('#chkListToggle').checked=showList;
+      $('#yearListSection').classList.toggle('hide', !showList);
+    }
     function renderAll(){ refreshYearSel(); persistUi(); updateCounts(); checkProblems(); renderCalendar(); renderEditor(); }
 
     /* ========= io / buttons ========= */
@@ -325,6 +339,12 @@
       $('#fileInp').onchange=async e=>{ const f=e.target.files?.[0]; if(!f) return; try{ const json=JSON.parse(await f.text()); DATA=normalize(json); setStatus('已載入本地 JSON'); renderAll(); }catch(err){ alert('JSON 解析失敗：'+err.message);} finally{e.target.value=''} };
 
       $('#btnSync').onclick=sync1823;
+
+      $('#chkListToggle').onchange=()=>{
+        const on=$('#chkListToggle').checked;
+        $('#yearListSection').classList.toggle('hide', !on);
+        localStorage.setItem(LIST_KEY,on?'1':'0');
+      };
 
       // 展收狀態記憶
       $('#editorBox').addEventListener('toggle',()=>{ localStorage.setItem(EDITOR_KEY, $('#editorBox').open?'1':'0'); });
