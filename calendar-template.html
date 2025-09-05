@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>Simple Calendar Template</title>
+<style>
+body{font-family:Arial, sans-serif;}
+#nav{display:flex;justify-content:space-between;align-items:center;max-width:420px;margin:20px auto;}
+#nav a{text-decoration:none;color:#00f;}
+#title{font-weight:bold;}
+table.calendar{border-collapse:collapse;margin:0 auto;}
+table.calendar th,table.calendar td{border:1px solid #ccc;width:60px;height:60px;text-align:center;}
+table.calendar th{background:#eee;}
+table.calendar td.sun{color:#b30000;}
+table.calendar td.sat{color:#555;}
+table.calendar td.today{background:#ffeeba;}
+table.calendar td.holiday{background:#ffdddd;}
+#holidays{max-width:420px;margin:10px auto;font-size:14px;}
+</style>
+</head>
+<body>
+<div id="nav">
+  <a id="prev" href="#">&#60; Prev</a>
+  <span id="title"></span>
+  <a id="next" href="#">Next &#62;</a>
+</div>
+<table id="cal" class="calendar">
+  <thead>
+    <tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>
+  </thead>
+  <tbody></tbody>
+</table>
+<div id="holidays"></div>
+<script type="module">
+import dayjs from 'https://cdn.jsdelivr.net/npm/dayjs@1.11.8/+esm';
+let cur=dayjs('2025-09-01');
+let holidayMap={};
+fetch('hk_holidays_2017_2026.json').then(r=>r.json()).then(data=>{
+  for(const year in data){
+    for(const h of data[year]){
+      holidayMap[h.date]=h.name_en||h.name_zh;
+    }
+  }
+  render();
+});
+function render(){
+  document.getElementById('title').textContent=`Calendar for ${cur.format('MMMM YYYY')} (Hong Kong)`;
+  const tbody=document.querySelector('#cal tbody');
+  tbody.innerHTML='';
+  const start=cur.startOf('month');
+  let d=start.startOf('week');
+  for(let r=0;r<6;r++){
+    const tr=document.createElement('tr');
+    for(let c=0;c<7;c++){
+      const td=document.createElement('td');
+      if(d.month()!==cur.month()) td.className='noday';
+      else{
+        td.textContent=d.date();
+        const iso=d.format('YYYY-MM-DD');
+        if(d.day()===0) td.classList.add('sun');
+        if(d.day()===6) td.classList.add('sat');
+        if(holidayMap[iso]){td.classList.add('holiday'); td.title=holidayMap[iso];}
+        if(d.isSame(dayjs(),'day')) td.classList.add('today');
+      }
+      tr.appendChild(td); d=d.add(1,'day');
+    }
+    tbody.appendChild(tr);
+  }
+  const monthHols=Object.entries(holidayMap).filter(([k])=>k.startsWith(cur.format('YYYY-MM')));
+  document.getElementById('holidays').innerHTML=monthHols.map(([d,name])=>`<div>${d}: ${name}</div>`).join('');
+}
+prev.onclick=e=>{e.preventDefault();cur=cur.subtract(1,'month');render();};
+next.onclick=e=>{e.preventDefault();cur=cur.add(1,'month');render();};
+</script>
+</body>
+</html>

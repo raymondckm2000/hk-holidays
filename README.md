@@ -23,6 +23,7 @@
 
 ## 專案檔案
 - `index.html` — 前端示範頁
+- `calendar-template.html` — 簡單月曆模板（類似 timeanddate 樣式）
 - `hk_holidays_2017_2026.json` — 假期資料（2017–2026）
 - `generate.js` — Node.js 抓取假期原始來源並生成 JSON
 
