@@ -36,9 +36,15 @@ import dayjs from 'https://cdn.jsdelivr.net/npm/dayjs@1.11.8/+esm';
 let cur=dayjs('2025-09-01');
 let holidayMap={};
 fetch('hk_holidays_2017_2026.json').then(r=>r.json()).then(data=>{
-  for(const year in data){
-    for(const h of data[year]){
-      holidayMap[h.date]=h.name_en||h.name_zh;
+  if(Array.isArray(data)){
+    for(const h of data){
+      if(h.date) holidayMap[h.date]=h.name_en||h.name_zh||'';
+    }
+  }else{
+    for(const year in data){
+      for(const h of data[year]){
+        holidayMap[h.date]=h.name_en||h.name_zh||'';
+      }
     }
   }
   render();
