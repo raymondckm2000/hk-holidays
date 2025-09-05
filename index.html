@@ -114,45 +114,45 @@
   </section>
 
   <!-- 年度列表：移到月曆底部，並加 show/hide -->
-  <section class="panel">
-    <details id="editorBox">
-      <summary class="flex mb8" id="editorSummary">
-        <strong>年度列表 / 編輯</strong>
-        <span class="pill" id="yearCount">—</span>
-        <span class="pill" id="statCount">—</span>
-        <button type="button" id="toggleEditor" class="hide"></button>
-      </summary>
+    <section class="panel">
+      <details id="editorBox" open>
+        <summary class="flex mb8" id="editorSummary">
+          <strong>年度列表</strong>
+          <span class="pill" id="yearCount">—</span>
+          <span class="pill" id="statCount">—</span>
+          <button type="button" id="btnEdit">編輯</button>
+        </summary>
 
-      <div class="flex mb8">
-        <label class="flex" style="gap:6px"><input type="checkbox" id="chkAll"> 全選</label>
-        <button id="btnDel">刪除勾選</button>
-        <button id="btnAdd">新增假期</button>
-      </div>
+        <div class="flex mb8 edit-controls hide">
+          <label class="flex" style="gap:6px"><input type="checkbox" id="chkAll"> 全選</label>
+          <button id="btnDel">刪除勾選</button>
+          <button id="btnAdd">新增假期</button>
+        </div>
 
-      <div class="flex mb8">
-        <input id="fileInp" type="file" accept="application/json" hidden />
-        <button id="btnLoadLocal">載入本地 JSON…</button>
-        <button id="btnDlYear">下載本年 JSON</button>
-        <button id="btnDlAll">下載全部 JSON</button>
-        <span id="problemBadge" class="pill">—</span>
-      </div>
+        <div class="flex mb8 edit-controls hide">
+          <input id="fileInp" type="file" accept="application/json" hidden />
+          <button id="btnLoadLocal">載入本地 JSON…</button>
+          <button id="btnDlYear">下載本年 JSON</button>
+          <button id="btnDlAll">下載全部 JSON</button>
+          <span id="problemBadge" class="pill">—</span>
+        </div>
 
-      <div class="tblwrap">
-        <table id="tbl">
-          <thead>
-            <tr>
-              <th style="width:40px"><input type="checkbox" id="chkAll2" title="全選" /></th>
-              <th style="width:120px">日期</th>
-              <th>名稱（中文）</th>
-              <th>名稱（English）</th>
-              <th style="width:140px">Statutory</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
-    </details>
-  </section>
+        <div class="tblwrap">
+          <table id="tbl">
+            <thead>
+              <tr>
+                <th style="width:40px" class="edit-col hide"><input type="checkbox" id="chkAll2" title="全選" /></th>
+                <th style="width:120px">日期</th>
+                <th>名稱（中文）</th>
+                <th>名稱（English）</th>
+                <th style="width:140px">Statutory</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </details>
+    </section>
 
   <script>
     /* ========= helpers & theme ========= */
@@ -170,8 +170,9 @@
 
     /* ========= data ========= */
     let DATA={}; const YEARS=Array.from({length:10},(_,i)=>2017+i);
-    let CUR={y:new Date().getFullYear(), m:new Date().getMonth()};
-    const SELECTED=new Set(); const DOW=['日','一','二','三','四','五','六'];
+      let CUR={y:new Date().getFullYear(), m:new Date().getMonth()};
+      let EDIT_MODE=false;
+      const SELECTED=new Set(); const DOW=['日','一','二','三','四','五','六'];
 
     function setStatus(t){$('#loadInfo').textContent=t}
     function normalize(raw){
@@ -267,30 +268,37 @@
       const ysel=$('#yearSel'); ysel.innerHTML=source.map(y=>`<option value="${y}">${y}</option>`).join('');
       if(!source.includes(CUR.y)) CUR.y=source[0]; ysel.value=CUR.y;
     }
-    function renderEditor(){
-      const y=CUR.y, list=(DATA[y]||[]).slice(), type=localStorage.getItem(TYPE_KEY)||'all', tb=$('#tbody'); tb.innerHTML='';
-      for(const h of list){
-        if(type==='stat' && !h.statutory) continue;
-        const tr=document.createElement('tr'); tr.dataset.date=h.date;
+      function renderEditor(){
+        const y=CUR.y, list=(DATA[y]||[]).slice(), type=localStorage.getItem(TYPE_KEY)||'all', tb=$('#tbody'); tb.innerHTML='';
+        for(const h of list){
+          if(type==='stat' && !h.statutory) continue;
+          const tr=document.createElement('tr'); tr.dataset.date=h.date;
 
-        const tdChk=document.createElement('td'); const cb=document.createElement('input'); cb.type='checkbox'; cb.checked=SELECTED.has(h.date);
-        cb.onchange=()=>{ cb.checked?SELECTED.add(h.date):SELECTED.delete(h.date); syncMaster() }; tdChk.appendChild(cb); tr.appendChild(tdChk);
+          const tdChk=document.createElement('td'); tdChk.className='edit-col hide';
+          const cb=document.createElement('input'); cb.type='checkbox'; cb.checked=SELECTED.has(h.date); cb.disabled=!EDIT_MODE;
+          cb.onchange=()=>{ cb.checked?SELECTED.add(h.date):SELECTED.delete(h.date); syncMaster() }; tdChk.appendChild(cb); tr.appendChild(tdChk);
 
-        const tdDate=document.createElement('td'); const inDate=document.createElement('input'); inDate.type='date'; inDate.value=h.date;
-        inDate.onchange=()=>{ const idx=DATA[y].findIndex(x=>x.date===h.date); if(idx>=0){const nd=inDate.value; DATA[y][idx].date=nd; SELECTED.delete(h.date); h.date=nd; tr.dataset.date=nd; SELECTED.add(nd); sortYear(y); renderAll(); } }
-        tdDate.appendChild(inDate); tr.appendChild(tdDate);
+          const tdDate=document.createElement('td'); const inDate=document.createElement('input'); inDate.type='date'; inDate.value=h.date; inDate.disabled=!EDIT_MODE;
+          inDate.onchange=()=>{ const idx=DATA[y].findIndex(x=>x.date===h.date); if(idx>=0){const nd=inDate.value; DATA[y][idx].date=nd; SELECTED.delete(h.date); h.date=nd; tr.dataset.date=nd; SELECTED.add(nd); sortYear(y); renderAll(); } };
+          tdDate.appendChild(inDate); tr.appendChild(tdDate);
 
-        const tdZh=document.createElement('td'); const inZh=document.createElement('input'); inZh.type='text'; inZh.className='grow'; inZh.value=h.name_zh||''; inZh.oninput=()=>{h.name_zh=inZh.value; checkProblems(); renderCalendar();}; tdZh.appendChild(inZh); tr.appendChild(tdZh);
+          const tdZh=document.createElement('td'); const inZh=document.createElement('input'); inZh.type='text'; inZh.className='grow'; inZh.value=h.name_zh||''; inZh.disabled=!EDIT_MODE; inZh.oninput=()=>{h.name_zh=inZh.value; checkProblems(); renderCalendar();}; tdZh.appendChild(inZh); tr.appendChild(tdZh);
 
-        const tdEn=document.createElement('td'); const inEn=document.createElement('input'); inEn.type='text'; inEn.className='grow'; inEn.value=h.name_en||''; inEn.oninput=()=>{h.name_en=inEn.value; checkProblems(); renderCalendar();}; tdEn.appendChild(inEn); tr.appendChild(tdEn);
+          const tdEn=document.createElement('td'); const inEn=document.createElement('input'); inEn.type='text'; inEn.className='grow'; inEn.value=h.name_en||''; inEn.disabled=!EDIT_MODE; inEn.oninput=()=>{h.name_en=inEn.value; checkProblems(); renderCalendar();}; tdEn.appendChild(inEn); tr.appendChild(tdEn);
 
-        const tdS=document.createElement('td'); const inS=document.createElement('input'); inS.type='checkbox'; inS.checked=!!h.statutory; inS.onchange=()=>{h.statutory=inS.checked; renderCalendar(); updateCounts();}; tdS.appendChild(inS); tr.appendChild(tdS);
+          const tdS=document.createElement('td'); const inS=document.createElement('input'); inS.type='checkbox'; inS.checked=!!h.statutory; inS.disabled=!EDIT_MODE; inS.onchange=()=>{h.statutory=inS.checked; renderCalendar(); updateCounts();}; tdS.appendChild(inS); tr.appendChild(tdS);
 
-        tb.appendChild(tr);
+          tb.appendChild(tr);
+        }
+        updateCounts(); syncMaster(); updateEditMode();
       }
-      updateCounts(); syncMaster();
-    }
-    function sortYear(y){(DATA[y]||[]).sort((a,b)=>a.date.localeCompare(b.date))}
+      function updateEditMode(){
+        $('#btnEdit').textContent=EDIT_MODE?'完成':'編輯';
+        for(const el of $$('.edit-controls')) el.classList.toggle('hide', !EDIT_MODE);
+        for(const el of $$('.edit-col')) el.classList.toggle('hide', !EDIT_MODE);
+        for(const inp of $$('#tbody input')) inp.disabled=!EDIT_MODE;
+      }
+      function sortYear(y){(DATA[y]||[]).sort((a,b)=>a.date.localeCompare(b.date))}
     function syncMaster(){const rows=$$('#tbody tr'); const all=rows.length && rows.every(tr=>SELECTED.has(tr.dataset.date)); $('#chkAll').checked=all; $('#chkAll2').checked=all;}
     function setMaster(){ for(const id of ['chkAll','chkAll2']) $('#'+id).onchange=e=>{ const on=e.target.checked; for(const tr of $$('#tbody tr')){const d=tr.dataset.date; const cb=$('input[type="checkbox"]',tr); cb.checked=on; on?SELECTED.add(d):SELECTED.delete(d);} syncMaster(); } }
 
@@ -309,18 +317,20 @@
     /* ========= io / buttons ========= */
     function dl(obj, name){ const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},0); }
 
-    function bindButtons(){
-      $('#btnPrev').onclick=()=>{ CUR.m--; if(CUR.m<0){CUR.m=11;CUR.y--; $('#yearSel').value=CUR.y;} renderCalendar(); }
-      $('#btnNext').onclick=()=>{ CUR.m++; if(CUR.m>11){CUR.m=0;CUR.y++; $('#yearSel').value=CUR.y;} renderCalendar(); }
-      $('#yearSel').onchange=()=>{ CUR.y=+$('#yearSel').value; renderAll(); }
-      $('#langSel').onchange=()=>{ localStorage.setItem(LANG_KEY,$('#langSel').value); renderCalendar(); renderEditor(); }
-      $('#typeSel').onchange=()=>{ localStorage.setItem(TYPE_KEY,$('#typeSel').value); renderCalendar(); renderEditor(); }
+      function bindButtons(){
+        $('#btnPrev').onclick=()=>{ CUR.m--; if(CUR.m<0){CUR.m=11;CUR.y--; $('#yearSel').value=CUR.y;} renderCalendar(); }
+        $('#btnNext').onclick=()=>{ CUR.m++; if(CUR.m>11){CUR.m=0;CUR.y++; $('#yearSel').value=CUR.y;} renderCalendar(); }
+        $('#yearSel').onchange=()=>{ CUR.y=+$('#yearSel').value; renderAll(); }
+        $('#langSel').onchange=()=>{ localStorage.setItem(LANG_KEY,$('#langSel').value); renderCalendar(); renderEditor(); }
+        $('#typeSel').onchange=()=>{ localStorage.setItem(TYPE_KEY,$('#typeSel').value); renderCalendar(); renderEditor(); }
+
+        $('#btnEdit').onclick=()=>{ EDIT_MODE=!EDIT_MODE; updateEditMode(); };
 
       $('#btnAdd').onclick=()=>{ const y=CUR.y; const date=`${y}-${String(CUR.m+1).padStart(2,'0')}-01`; (DATA[y] ||= []).push({date,name_zh:'（請輸入）',name_en:'(enter name)',statutory:false}); sortYear(y); renderAll(); focusOrAdd(date); }
       $('#btnDel').onclick=()=>{ const y=CUR.y; DATA[y]=(DATA[y]||[]).filter(h=>!SELECTED.has(h.date)); SELECTED.clear(); renderAll(); }
 
-      $('#btnDlYear').onclick=()=>dl({[CUR.y]:DATA[CUR.y]||[]}, `hk_holidays_${CUR.y}.json`);
-      $('#btnDlAll').onclick=()=>dl(DATA, `hk_holidays_2017_2026.json`);
+        $('#btnDlYear').onclick=()=>dl({[CUR.y]:DATA[CUR.y]||[]}, `hk_holidays_${CUR.y}.json`);
+        $('#btnDlAll').onclick=()=>dl(DATA, `hk_holidays_2017_2026.json`);
 
       $('#btnLoadLocal').onclick=()=>$('#fileInp').click();
       $('#fileInp').onchange=async e=>{ const f=e.target.files?.[0]; if(!f) return; try{ const json=JSON.parse(await f.text()); DATA=normalize(json); setStatus('已載入本地 JSON'); renderAll(); }catch(err){ alert('JSON 解析失敗：'+err.message);} finally{e.target.value=''} };
