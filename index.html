@@ -37,12 +37,19 @@
     .cal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
     .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:8px}
     .dow{font-size:12px;color:var(--muted);text-align:center;padding:6px 0}
+    .dow.sun{color:var(--holiday)}
+    .dow.sat{color:var(--accent)}
     .cell{min-height:92px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:6px;position:relative}
     .cell .d{font-size:12px;color:var(--muted)}
     .cell .hl{margin-top:4px;font-size:12px;line-height:1.25}
     .cell .hl .name{color:var(--holiday)}
     .cell .hl .stat{color:var(--stat);font-weight:600;margin-left:6px;font-size:11px}
     .cell.dim{opacity:.45}
+
+    /* 周末樣式 */
+    .cell.weekend{background:var(--surface)}
+    .cell.sun .d{color:var(--holiday)}
+    .cell.sat .d{color:var(--accent)}
 
     .tblwrap{overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px}
     table{width:100%;border-collapse:collapse;font-size:14px}
@@ -236,13 +243,20 @@
       const y=CUR.y, m=CUR.m, title=`${y} 年 ${m+1} 月`;
       $('#calTitle').textContent=title; $('#calTitle2').textContent=title;
       const g=$('#calGrid'); g.innerHTML='';
-      for(const d of DOW){const el=document.createElement('div'); el.className='dow'; el.textContent=d; g.appendChild(el);}
+      for(let i=0;i<DOW.length;i++){
+        const el=document.createElement('div');
+        el.className='dow';
+        if(i===0) el.classList.add('sun'); else if(i===6) el.classList.add('sat');
+        el.textContent=DOW[i];
+        g.appendChild(el);
+      }
 
       const first=new Date(y,m,1), start=first.getDay(), days=new Date(y,m+1,0).getDate(), prevDays=start, prevMonthDays=new Date(y,m,0).getDate();
       const lang=localStorage.getItem(LANG_KEY)||'zh', type=localStorage.getItem(TYPE_KEY)||'all';
       const map=new Map((DATA[y]||[]).map(h=>[h.date,h]));
       for(let i=0;i<42;i++){
         const cell=document.createElement('div'); cell.className='cell';
+        const dow=i%7; if(dow===0) cell.classList.add('sun','weekend'); else if(dow===6) cell.classList.add('sat','weekend');
         let d,yy=y,mm=m,dim=false;
         if(i<prevDays){d=prevMonthDays-prevDays+1+i; mm=m-1; if(mm<0){mm=11;yy=y-1} dim=true}
         else if(i>=prevDays+days){d=i-(prevDays+days)+1; mm=m+1; if(mm>11){mm=0;yy=y+1} dim=true}
