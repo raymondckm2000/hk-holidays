@@ -102,13 +102,6 @@
       <button id="btnNext">下個月 &gt;</button>
     </div>
 
-    <div class="row">
-      <input id="fileInp" type="file" accept="application/json" hidden />
-      <button id="btnLoadLocal">載入本地 JSON…</button>
-      <button id="btnDlYear">下載本年 JSON</button>
-      <button id="btnDlAll">下載全部 JSON</button>
-      <span id="problemBadge" class="pill">—</span>
-    </div>
   </div>
 
   <!-- 月曆 -->
@@ -134,6 +127,14 @@
         <label class="flex" style="gap:6px"><input type="checkbox" id="chkAll"> 全選</label>
         <button id="btnDel">刪除勾選</button>
         <button id="btnAdd">新增假期</button>
+      </div>
+
+      <div class="flex mb8">
+        <input id="fileInp" type="file" accept="application/json" hidden />
+        <button id="btnLoadLocal">載入本地 JSON…</button>
+        <button id="btnDlYear">下載本年 JSON</button>
+        <button id="btnDlAll">下載全部 JSON</button>
+        <span id="problemBadge" class="pill">—</span>
       </div>
 
       <div class="tblwrap">
@@ -302,7 +303,7 @@
     function updateCounts(){ const y=CUR.y, arr=(DATA[y]||[]); $('#yearCount').textContent=`本年共 ${arr.length} 筆`; $('#statCount').textContent=`Stat: ${arr.filter(h=>h.statutory).length}`; }
     function checkProblems(){ let zh=0,en=0; for(const y of Object.keys(DATA)) for(const h of (DATA[y]||[])){ if(!h.name_zh) zh++; if(!h.name_en) en++; } if(zh||en){$('#problemBadge').textContent=`資料缺漏：中文 ${zh} / 英文 ${en}`; $('#problemBadge').classList.add('problems'); $('#problemBadge').classList.remove('ok')} else {$('#problemBadge').textContent='資料完整'; $('#problemBadge').classList.add('ok'); $('#problemBadge').classList.remove('problems')} }
 
-    function persistUi(){ $('#langSel').value=localStorage.getItem(LANG_KEY)||'zh'; $('#typeSel').value=localStorage.getItem(TYPE_KEY)||'all'; const open=localStorage.getItem(EDITOR_KEY)!=='0'; $('#editorBox').open=open; }
+    function persistUi(){ $('#langSel').value=localStorage.getItem(LANG_KEY)||'zh'; $('#typeSel').value=localStorage.getItem(TYPE_KEY)||'all'; const open=localStorage.getItem(EDITOR_KEY)==='1'; $('#editorBox').open=open; }
     function renderAll(){ refreshYearSel(); persistUi(); updateCounts(); checkProblems(); renderCalendar(); renderEditor(); }
 
     /* ========= io / buttons ========= */
