@@ -104,6 +104,12 @@
         <option value="stat">只顯示勞工假期（Statutory）</option>
       </select>
 
+      <label for="viewSel">顯示</label>
+      <select id="viewSel">
+        <option value="month">按月</option>
+        <option value="year">按年</option>
+      </select>
+
       <button id="btnPrev">&lt; 上個月</button>
       <span class="badge" id="calTitle">—</span>
       <button id="btnNext">下個月 &gt;</button>
@@ -112,12 +118,29 @@
   </div>
 
   <!-- 月曆 -->
-  <section class="panel">
+  <section class="panel" id="monthSection">
     <div class="cal-head">
       <div id="calTitle2" style="font-weight:700">—</div>
       <div class="muted">點格子可在下面「年度列表」編輯</div>
     </div>
     <div class="cal-grid" id="calGrid"></div>
+  </section>
+
+  <!-- 全年假期 -->
+  <section class="panel hide" id="yearSection">
+    <div class="tblwrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:120px">日期</th>
+            <th style="width:120px">星期</th>
+            <th>名稱</th>
+            <th style="width:80px">Stat</th>
+          </tr>
+        </thead>
+        <tbody id="yearBody"></tbody>
+      </table>
+    </div>
   </section>
 
   <!-- 年度列表：移到月曆底部，並加 show/hide -->
@@ -164,7 +187,7 @@
   <script>
     /* ========= helpers & theme ========= */
     const $=(s,el=document)=>el.querySelector(s); const $$=(s,el=document)=>Array.from(el.querySelectorAll(s));
-    const THEME_KEY='hk_holidays_theme'; const LANG_KEY='hk_lang', TYPE_KEY='hk_type', EDITOR_KEY='hk_editor_open';
+    const THEME_KEY='hk_holidays_theme'; const LANG_KEY='hk_lang', TYPE_KEY='hk_type', EDITOR_KEY='hk_editor_open', VIEW_KEY='hk_view';
 
     function getSystemPref(){return matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
     function applyTheme(m){const f=(m==='auto')?getSystemPref():m;document.documentElement.setAttribute('data-theme',f);$('#themeBadge').textContent='主題：'+f}
@@ -177,9 +200,10 @@
 
     /* ========= data ========= */
     let DATA={}; const YEARS=Array.from({length:10},(_,i)=>2017+i);
-      let CUR={y:new Date().getFullYear(), m:new Date().getMonth()};
+      let CUR={y:new Date().getFullYear(), m:new Date().getMonth(), view:'month'};
       let EDIT_MODE=false;
       const SELECTED=new Set(); const DOW=['日','一','二','三','四','五','六'];
+      const DOW_EN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
     function setStatus(t){$('#loadInfo').textContent=t}
     function normalize(raw){
@@ -276,6 +300,24 @@
       }
     }
 
+    function renderYearView(){
+      const y=CUR.y;
+      $('#calTitle').textContent=`${y} 年`;
+      $('#calTitle2').textContent=`${y} 年`;
+      const lang=localStorage.getItem(LANG_KEY)||'zh';
+      const type=localStorage.getItem(TYPE_KEY)||'all';
+      const tbody=$('#yearBody');
+      tbody.innerHTML='';
+      for(const h of (DATA[y]||[])){
+        if(type==='stat' && !h.statutory) continue;
+        const name=(lang==='zh')?h.name_zh:(lang==='en')?h.name_en:`${h.name_zh||''}${(h.name_zh&&h.name_en)?' / ':''}${h.name_en||''}`;
+        const dow=DOW_EN[new Date(h.date).getDay()];
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${h.date}</td><td>${dow}</td><td>${name||'(未命名)'}</td><td>${h.statutory?'STAT':''}</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+
     /* ========= editor ========= */
     function refreshYearSel(){
       const ys=Object.keys(DATA).map(Number).sort((a,b)=>a-b); const source=ys.length?ys:YEARS;
@@ -296,11 +338,11 @@
           inDate.onchange=()=>{ const idx=DATA[y].findIndex(x=>x.date===h.date); if(idx>=0){const nd=inDate.value; DATA[y][idx].date=nd; SELECTED.delete(h.date); h.date=nd; tr.dataset.date=nd; SELECTED.add(nd); sortYear(y); renderAll(); } };
           tdDate.appendChild(inDate); tr.appendChild(tdDate);
 
-          const tdZh=document.createElement('td'); const inZh=document.createElement('input'); inZh.type='text'; inZh.className='grow'; inZh.value=h.name_zh||''; inZh.disabled=!EDIT_MODE; inZh.oninput=()=>{h.name_zh=inZh.value; checkProblems(); renderCalendar();}; tdZh.appendChild(inZh); tr.appendChild(tdZh);
+          const tdZh=document.createElement('td'); const inZh=document.createElement('input'); inZh.type='text'; inZh.className='grow'; inZh.value=h.name_zh||''; inZh.disabled=!EDIT_MODE; inZh.oninput=()=>{h.name_zh=inZh.value; checkProblems(); renderAll();}; tdZh.appendChild(inZh); tr.appendChild(tdZh);
 
-          const tdEn=document.createElement('td'); const inEn=document.createElement('input'); inEn.type='text'; inEn.className='grow'; inEn.value=h.name_en||''; inEn.disabled=!EDIT_MODE; inEn.oninput=()=>{h.name_en=inEn.value; checkProblems(); renderCalendar();}; tdEn.appendChild(inEn); tr.appendChild(tdEn);
+          const tdEn=document.createElement('td'); const inEn=document.createElement('input'); inEn.type='text'; inEn.className='grow'; inEn.value=h.name_en||''; inEn.disabled=!EDIT_MODE; inEn.oninput=()=>{h.name_en=inEn.value; checkProblems(); renderAll();}; tdEn.appendChild(inEn); tr.appendChild(tdEn);
 
-          const tdS=document.createElement('td'); const inS=document.createElement('input'); inS.type='checkbox'; inS.checked=!!h.statutory; inS.disabled=!EDIT_MODE; inS.onchange=()=>{h.statutory=inS.checked; renderCalendar(); updateCounts();}; tdS.appendChild(inS); tr.appendChild(tdS);
+          const tdS=document.createElement('td'); const inS=document.createElement('input'); inS.type='checkbox'; inS.checked=!!h.statutory; inS.disabled=!EDIT_MODE; inS.onchange=()=>{h.statutory=inS.checked; renderAll(); updateCounts();}; tdS.appendChild(inS); tr.appendChild(tdS);
 
           tb.appendChild(tr);
         }
@@ -325,18 +367,51 @@
     function updateCounts(){ const y=CUR.y, arr=(DATA[y]||[]); $('#yearCount').textContent=`本年共 ${arr.length} 筆`; $('#statCount').textContent=`Stat: ${arr.filter(h=>h.statutory).length}`; }
     function checkProblems(){ let zh=0,en=0; for(const y of Object.keys(DATA)) for(const h of (DATA[y]||[])){ if(!h.name_zh) zh++; if(!h.name_en) en++; } if(zh||en){$('#problemBadge').textContent=`資料缺漏：中文 ${zh} / 英文 ${en}`; $('#problemBadge').classList.add('problems'); $('#problemBadge').classList.remove('ok')} else {$('#problemBadge').textContent='資料完整'; $('#problemBadge').classList.add('ok'); $('#problemBadge').classList.remove('problems')} }
 
-    function persistUi(){ $('#langSel').value=localStorage.getItem(LANG_KEY)||'zh'; $('#typeSel').value=localStorage.getItem(TYPE_KEY)||'all'; const open=localStorage.getItem(EDITOR_KEY)==='1'; $('#editorBox').open=open; }
-    function renderAll(){ refreshYearSel(); persistUi(); updateCounts(); checkProblems(); renderCalendar(); renderEditor(); }
+    function persistUi(){
+      $('#langSel').value=localStorage.getItem(LANG_KEY)||'zh';
+      $('#typeSel').value=localStorage.getItem(TYPE_KEY)||'all';
+      $('#viewSel').value=localStorage.getItem(VIEW_KEY)||'month';
+      CUR.view=$('#viewSel').value;
+      const open=localStorage.getItem(EDITOR_KEY)==='1';
+      $('#editorBox').open=open;
+    }
+    function renderAll(){
+      refreshYearSel();
+      persistUi();
+      updateCounts();
+      checkProblems();
+      if(CUR.view==='month') renderCalendar(); else renderYearView();
+      $('#monthSection').classList.toggle('hide', CUR.view!=='month');
+      $('#yearSection').classList.toggle('hide', CUR.view!=='year');
+      $('#btnPrev').classList.toggle('hide', CUR.view!=='month');
+      $('#btnNext').classList.toggle('hide', CUR.view!=='month');
+      renderEditor();
+    }
 
     /* ========= io / buttons ========= */
     function dl(obj, name){ const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},0); }
 
       function bindButtons(){
-        $('#btnPrev').onclick=()=>{ CUR.m--; if(CUR.m<0){CUR.m=11;CUR.y--; $('#yearSel').value=CUR.y;} renderCalendar(); }
-        $('#btnNext').onclick=()=>{ CUR.m++; if(CUR.m>11){CUR.m=0;CUR.y++; $('#yearSel').value=CUR.y;} renderCalendar(); }
-        $('#yearSel').onchange=()=>{ CUR.y=+$('#yearSel').value; renderAll(); }
-        $('#langSel').onchange=()=>{ localStorage.setItem(LANG_KEY,$('#langSel').value); renderCalendar(); renderEditor(); }
-        $('#typeSel').onchange=()=>{ localStorage.setItem(TYPE_KEY,$('#typeSel').value); renderCalendar(); renderEditor(); }
+        $('#btnPrev').onclick=()=>{
+          if(CUR.view==='month'){
+            CUR.m--; if(CUR.m<0){CUR.m=11;CUR.y--; $('#yearSel').value=CUR.y;}
+          }else{
+            CUR.y--; $('#yearSel').value=CUR.y;
+          }
+          renderAll();
+        };
+        $('#btnNext').onclick=()=>{
+          if(CUR.view==='month'){
+            CUR.m++; if(CUR.m>11){CUR.m=0;CUR.y++; $('#yearSel').value=CUR.y;}
+          }else{
+            CUR.y++; $('#yearSel').value=CUR.y;
+          }
+          renderAll();
+        };
+        $('#yearSel').onchange=()=>{ CUR.y=+$('#yearSel').value; renderAll(); };
+        $('#langSel').onchange=()=>{ localStorage.setItem(LANG_KEY,$('#langSel').value); renderAll(); };
+        $('#typeSel').onchange=()=>{ localStorage.setItem(TYPE_KEY,$('#typeSel').value); renderAll(); };
+        $('#viewSel').onchange=()=>{ CUR.view=$('#viewSel').value; localStorage.setItem(VIEW_KEY,CUR.view); renderAll(); };
 
         $('#btnEdit').onclick=()=>{ EDIT_MODE=!EDIT_MODE; updateEditMode(); };
 
