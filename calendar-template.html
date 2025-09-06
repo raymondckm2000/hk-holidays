@@ -83,13 +83,18 @@ function render(){
   const mode=modeSel.value;
   const tbody=document.querySelector('#cal tbody');
   const cal=document.getElementById('cal');
+ codex/add-year-selection-option-to-calendar-nx1m29
   const yearCal=document.getElementById('yearCal');
+main
   const prevBtn=document.getElementById('prev');
   const nextBtn=document.getElementById('next');
   yearSel.value=cur.year();
   if(mode==='month'){
     cal.style.display='';
+ codex/add-year-selection-option-to-calendar-nx1m29
     yearCal.style.display='none';
+
+ main
     prevBtn.style.display='';
     nextBtn.style.display='';
     document.getElementById('title').textContent=`Calendar for ${cur.format('MMMM YYYY')} (Hong Kong)`;
@@ -110,6 +115,7 @@ function render(){
           if(d.isSame(dayjs(),'day')) td.classList.add('today');
         }
         tr.appendChild(td); d=d.add(1,'day');
+ codex/add-year-selection-option-to-calendar-nx1m29
       }
       tbody.appendChild(tr);
     }
@@ -159,6 +165,19 @@ function render(){
       monthDiv.appendChild(table);
       yearCal.appendChild(monthDiv);
     }
+
+      }
+      tbody.appendChild(tr);
+    }
+    const monthHols=Object.entries(holidayMap).filter(([k])=>k.startsWith(cur.format('YYYY-MM')));
+    document.getElementById('holidays').innerHTML=monthHols.map(([d,name])=>`<div>${d}: ${name}</div>`).join('');
+  }else{
+    cal.style.display='none';
+    prevBtn.style.display='none';
+    nextBtn.style.display='none';
+    document.getElementById('title').textContent=`Holidays for ${cur.year()} (Hong Kong)`;
+    tbody.innerHTML='';
+ main
     const yearHols=Object.entries(holidayMap).filter(([k])=>k.startsWith(cur.format('YYYY'))).sort((a,b)=>a[0].localeCompare(b[0]));
     document.getElementById('holidays').innerHTML=yearHols.map(([d,name])=>`<div>${d} (${dayjs(d).format('dddd')}): ${name}</div>`).join('');
   }
