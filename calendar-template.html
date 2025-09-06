@@ -121,6 +121,7 @@ function render(){
     prevBtn.style.display='none';
     nextBtn.style.display='none';
     document.getElementById('title').textContent=`Calendar for Year ${cur.year()} (Hong Kong)`;
+    tbody.innerHTML='';
     yearCal.innerHTML='';
     for(let m=0;m<12;m++){
       const month=dayjs(`${cur.year()}-${String(m+1).padStart(2,'0')}-01`);
