@@ -8,6 +8,7 @@ body{font-family:Arial, sans-serif;}
 #nav{display:flex;justify-content:space-between;align-items:center;max-width:840px;margin:20px auto;font-size:32px;}
 #nav a{text-decoration:none;color:#00f;}
 #title{font-weight:bold;}
+#options{text-align:center;max-width:840px;margin:10px auto;font-size:28px;}
 table.calendar{border-collapse:collapse;margin:0 auto;}
 table.calendar th,table.calendar td{border:1px solid #ccc;width:120px;height:120px;text-align:center;font-size:32px;}
 table.calendar th{background:#eee;}
@@ -15,6 +16,16 @@ table.calendar td.sun{color:#b30000;}
 table.calendar td.sat{color:#555;}
 table.calendar td.today{background:#ffeeba;}
 table.calendar td.holiday{background:#ffdddd;}
+#yearCal{display:none;flex-wrap:wrap;justify-content:center;max-width:840px;margin:10px auto;}
+#yearCal .month{margin:5px;width:260px;}
+#yearCal .month-title{text-align:center;font-weight:bold;font-size:20px;margin-bottom:4px;}
+#yearCal table{border-collapse:collapse;margin:0 auto;}
+#yearCal th,#yearCal td{border:1px solid #ccc;width:40px;height:40px;text-align:center;font-size:14px;}
+#yearCal th{background:#eee;}
+#yearCal td.sun{color:#b30000;}
+#yearCal td.sat{color:#555;}
+#yearCal td.today{background:#ffeeba;}
+#yearCal td.holiday{background:#ffdddd;}
 #holidays{max-width:840px;margin:10px auto;font-size:28px;}
 </style>
 </head>
@@ -24,17 +35,29 @@ table.calendar td.holiday{background:#ffdddd;}
   <span id="title"></span>
   <a id="next" href="#">Next &#62;</a>
 </div>
+<div id="options">
+  View:
+  <select id="mode">
+    <option value="month">Month</option>
+    <option value="year">Year</option>
+  </select>
+  Year:
+  <select id="yearSel"></select>
+</div>
 <table id="cal" class="calendar">
   <thead>
     <tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>
   </thead>
   <tbody></tbody>
 </table>
+<div id="yearCal"></div>
 <div id="holidays"></div>
 <script type="module">
 import dayjs from 'https://cdn.jsdelivr.net/npm/dayjs@1.11.8/+esm';
 let cur=dayjs('2025-09-01');
 let holidayMap={};
+const yearSel=document.getElementById('yearSel');
+const modeSel=document.getElementById('mode');
 fetch('hk_holidays_2017_2026.json').then(r=>r.json()).then(data=>{
   if(Array.isArray(data)){
     for(const h of data){
@@ -47,36 +70,111 @@ fetch('hk_holidays_2017_2026.json').then(r=>r.json()).then(data=>{
       }
     }
   }
+  const years=[...new Set(Object.keys(holidayMap).map(d=>d.slice(0,4)))].sort();
+  for(const y of years){
+    const opt=document.createElement('option');
+    opt.value=y; opt.textContent=y;
+    yearSel.appendChild(opt);
+  }
+  yearSel.value=cur.year();
   render();
 });
 function render(){
-  document.getElementById('title').textContent=`Calendar for ${cur.format('MMMM YYYY')} (Hong Kong)`;
+  const mode=modeSel.value;
   const tbody=document.querySelector('#cal tbody');
-  tbody.innerHTML='';
-  const start=cur.startOf('month');
-  let d=start.startOf('week');
-  for(let r=0;r<6;r++){
-    const tr=document.createElement('tr');
-    for(let c=0;c<7;c++){
-      const td=document.createElement('td');
-      if(d.month()!==cur.month()) td.className='noday';
-      else{
-        td.textContent=d.date();
-        const iso=d.format('YYYY-MM-DD');
-        if(d.day()===0) td.classList.add('sun');
-        if(d.day()===6) td.classList.add('sat');
-        if(holidayMap[iso]){td.classList.add('holiday'); td.title=holidayMap[iso];}
-        if(d.isSame(dayjs(),'day')) td.classList.add('today');
+  const cal=document.getElementById('cal');
+  const yearCal=document.getElementById('yearCal');
+  const prevBtn=document.getElementById('prev');
+  const nextBtn=document.getElementById('next');
+  yearSel.value=cur.year();
+  if(mode==='month'){
+    cal.style.display='';
+    yearCal.style.display='none';
+    prevBtn.style.display='';
+    nextBtn.style.display='';
+    document.getElementById('title').textContent=`Calendar for ${cur.format('MMMM YYYY')} (Hong Kong)`;
+    tbody.innerHTML='';
+    const start=cur.startOf('month');
+    let d=start.startOf('week');
+    for(let r=0;r<6;r++){
+      const tr=document.createElement('tr');
+      for(let c=0;c<7;c++){
+        const td=document.createElement('td');
+        if(d.month()!==cur.month()) td.className='noday';
+        else{
+          td.textContent=d.date();
+          const iso=d.format('YYYY-MM-DD');
+          if(d.day()===0) td.classList.add('sun');
+          if(d.day()===6) td.classList.add('sat');
+          if(holidayMap[iso]){td.classList.add('holiday'); td.title=holidayMap[iso];}
+          if(d.isSame(dayjs(),'day')) td.classList.add('today');
+        }
+        tr.appendChild(td); d=d.add(1,'day');
       }
-      tr.appendChild(td); d=d.add(1,'day');
+      tbody.appendChild(tr);
     }
-    tbody.appendChild(tr);
+    const monthHols=Object.entries(holidayMap).filter(([k])=>k.startsWith(cur.format('YYYY-MM')));
+    document.getElementById('holidays').innerHTML=monthHols.map(([d,name])=>`<div>${d}: ${name}</div>`).join('');
+  }else{
+    cal.style.display='none';
+    yearCal.style.display='flex';
+    prevBtn.style.display='none';
+    nextBtn.style.display='none';
+    document.getElementById('title').textContent=`Calendar for Year ${cur.year()} (Hong Kong)`;
+    tbody.innerHTML='';
+    yearCal.innerHTML='';
+    for(let m=0;m<12;m++){
+      const month=dayjs(`${cur.year()}-${String(m+1).padStart(2,'0')}-01`);
+      const monthDiv=document.createElement('div');
+      monthDiv.className='month';
+      const title=document.createElement('div');
+      title.className='month-title';
+      title.textContent=month.format('MMMM');
+      monthDiv.appendChild(title);
+      const table=document.createElement('table');
+      const thead=document.createElement('thead');
+      const headRow=document.createElement('tr');
+      ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(dn=>{const th=document.createElement('th');th.textContent=dn;headRow.appendChild(th);});
+      thead.appendChild(headRow); table.appendChild(thead);
+      const body=document.createElement('tbody');
+      let d=month.startOf('month').startOf('week');
+      for(let r=0;r<6;r++){
+        const tr=document.createElement('tr');
+        for(let c=0;c<7;c++){
+          const td=document.createElement('td');
+          if(d.month()!==month.month()) td.className='noday';
+          else{
+            td.textContent=d.date();
+            const iso=d.format('YYYY-MM-DD');
+            if(d.day()===0) td.classList.add('sun');
+            if(d.day()===6) td.classList.add('sat');
+            if(holidayMap[iso]){td.classList.add('holiday'); td.title=holidayMap[iso];}
+            if(d.isSame(dayjs(),'day')) td.classList.add('today');
+          }
+          tr.appendChild(td); d=d.add(1,'day');
+        }
+        body.appendChild(tr);
+      }
+      table.appendChild(body);
+      monthDiv.appendChild(table);
+      yearCal.appendChild(monthDiv);
+    }
+    const yearHols=Object.entries(holidayMap).filter(([k])=>k.startsWith(cur.format('YYYY'))).sort((a,b)=>a[0].localeCompare(b[0]));
+    document.getElementById('holidays').innerHTML=yearHols.map(([d,name])=>`<div>${d} (${dayjs(d).format('dddd')}): ${name}</div>`).join('');
   }
-  const monthHols=Object.entries(holidayMap).filter(([k])=>k.startsWith(cur.format('YYYY-MM')));
-  document.getElementById('holidays').innerHTML=monthHols.map(([d,name])=>`<div>${d}: ${name}</div>`).join('');
 }
-prev.onclick=e=>{e.preventDefault();cur=cur.subtract(1,'month');render();};
-next.onclick=e=>{e.preventDefault();cur=cur.add(1,'month');render();};
+yearSel.onchange=()=>{cur=cur.year(parseInt(yearSel.value,10));render();};
+modeSel.onchange=render;
+prevBtn.onclick=e=>{
+  e.preventDefault();
+  cur=cur.subtract(1, modeSel.value==='year' ? 'year' : 'month');
+  render();
+};
+nextBtn.onclick=e=>{
+  e.preventDefault();
+  cur=cur.add(1, modeSel.value==='year' ? 'year' : 'month');
+  render();
+};
 </script>
 </body>
 </html>
