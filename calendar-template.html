@@ -64,7 +64,7 @@ let holidayMap={};
 const yearSel=document.getElementById('yearSel');
 const modeSel=document.getElementById('mode');
 const langSel=document.getElementById('langSel');
-const DOW_ZH=['周日','周一','周二','周三','周四','周五','周六'];
+const DOW_ZH=['日','一','二','三','四','五','六'];
 const DOW_EN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const DOW_EN_FULL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 fetch('hk_holidays_2017_2026.json').then(r=>r.json()).then(data=>{
@@ -127,8 +127,12 @@ function render(){
       }
       tbody.appendChild(tr);
     }
-    const monthHols=Object.entries(holidayMap).filter(([k])=>k.startsWith(cur.format('YYYY-MM')));
-    document.getElementById('holidays').innerHTML=monthHols.map(([d,n])=>`<div>${d}: ${n[lang]}</div>`).join('');
+    const monthHols=Object.entries(holidayMap)
+      .filter(([k])=>k.startsWith(cur.format('YYYY-MM')))
+      .sort((a,b)=>a[0].localeCompare(b[0]));
+    document.getElementById('holidays').innerHTML=monthHols
+      .map(([d,n])=>`<div>${d} (${dowFull[dayjs(d).day()]}): ${n[lang]}</div>`)
+      .join('');
   }else{
     cal.style.display='none';
     yearCal.style.display='flex';
