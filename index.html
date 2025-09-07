@@ -185,7 +185,7 @@
     </section>
 
   <script>
-    /* ========= helpers & theme ========= */
+    /* helpers & theme */
     const $=(s,el=document)=>el.querySelector(s); const $$=(s,el=document)=>Array.from(el.querySelectorAll(s));
     const THEME_KEY='hk_holidays_theme'; const LANG_KEY='hk_lang', TYPE_KEY='hk_type', EDITOR_KEY='hk_editor_open', VIEW_KEY='hk_view';
 
@@ -198,7 +198,7 @@
       const mq=matchMedia('(prefers-color-scheme: dark)'); mq.addEventListener?.('change',()=>{ if((localStorage.getItem(THEME_KEY)||'auto')==='auto') applyTheme('auto')});
     }
 
-    /* ========= data ========= */
+    /* data */
     let DATA={}; const YEARS=Array.from({length:10},(_,i)=>2017+i);
       let CUR={y:new Date().getFullYear(), m:new Date().getMonth(), view:'month'};
       let EDIT_MODE=false;
@@ -228,7 +228,7 @@
       }
     }
 
-    /* ========= 1823 sync (with optional proxy) ========= */
+    /* 1823 sync (with optional proxy) */
     async function sync1823(){
       const proxy=($('#proxy').value||'').trim();
       const en='https://www.1823.gov.hk/common/ical/en.json';
@@ -262,7 +262,7 @@
       }
     }
 
-    /* ========= calendar ========= */
+    /* calendar */
     function renderCalendar(){
       const y=CUR.y, m=CUR.m, title=`${y} 年 ${m+1} 月`;
       $('#calTitle').textContent=title; $('#calTitle2').textContent=title;
@@ -318,7 +318,7 @@
       }
     }
 
-    /* ========= editor ========= */
+    /* editor */
     function refreshYearSel(){
       const ys=Object.keys(DATA).map(Number).sort((a,b)=>a-b); const source=ys.length?ys:YEARS;
       const ysel=$('#yearSel'); ysel.innerHTML=source.map(y=>`<option value="${y}">${y}</option>`).join('');
@@ -388,7 +388,7 @@
       renderEditor();
     }
 
-    /* ========= io / buttons ========= */
+    /* io / buttons */
     function dl(obj, name){ const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},0); }
 
       function bindButtons(){
@@ -431,7 +431,7 @@
       setMaster();
     }
 
-    /* ========= boot ========= */
+    /* boot */
     (async function boot(){
       initTheme();
       await loadDefault();
