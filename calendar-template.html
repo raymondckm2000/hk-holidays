@@ -41,12 +41,17 @@ table.calendar td.holiday{background:#ffdddd;}
     <option value="month">Month</option>
     <option value="year">Year</option>
   </select>
+  Lang:
+  <select id="langSel">
+    <option value="en">English</option>
+    <option value="zh">中文</option>
+  </select>
   Year:
   <select id="yearSel"></select>
 </div>
 <table id="cal" class="calendar">
   <thead>
-    <tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>
+    <tr id="dow"></tr>
   </thead>
   <tbody></tbody>
 </table>
@@ -58,15 +63,19 @@ let cur=dayjs('2025-09-01');
 let holidayMap={};
 const yearSel=document.getElementById('yearSel');
 const modeSel=document.getElementById('mode');
+const langSel=document.getElementById('langSel');
+const DOW_ZH=['周日','周一','周二','周三','周四','周五','周六'];
+const DOW_EN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DOW_EN_FULL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 fetch('hk_holidays_2017_2026.json').then(r=>r.json()).then(data=>{
   if(Array.isArray(data)){
     for(const h of data){
-      if(h.date) holidayMap[h.date]=h.name_en||h.name_zh||'';
+      if(h.date) holidayMap[h.date]={zh:h.name_zh||'',en:h.name_en||''};
     }
   }else{
     for(const year in data){
       for(const h of data[year]){
-        holidayMap[h.date]=h.name_en||h.name_zh||'';
+        holidayMap[h.date]={zh:h.name_zh||'',en:h.name_en||''};
       }
     }
   }
@@ -81,6 +90,10 @@ fetch('hk_holidays_2017_2026.json').then(r=>r.json()).then(data=>{
 });
 function render(){
   const mode=modeSel.value;
+  const lang=langSel.value;
+  const dowNames=lang==='zh'?DOW_ZH:DOW_EN;
+  const dowFull=lang==='zh'?DOW_ZH:DOW_EN_FULL;
+  document.getElementById('dow').innerHTML=dowNames.map(d=>`<th>${d}</th>`).join('');
   const tbody=document.querySelector('#cal tbody');
   const cal=document.getElementById('cal');
   const yearCal=document.getElementById('yearCal');
@@ -106,7 +119,8 @@ function render(){
           const iso=d.format('YYYY-MM-DD');
           if(d.day()===0) td.classList.add('sun');
           if(d.day()===6) td.classList.add('sat');
-          if(holidayMap[iso]){td.classList.add('holiday'); td.title=holidayMap[iso];}
+          const h=holidayMap[iso];
+          if(h){td.classList.add('holiday'); td.title=h[lang];}
           if(d.isSame(dayjs(),'day')) td.classList.add('today');
         }
         tr.appendChild(td); d=d.add(1,'day');
@@ -114,7 +128,7 @@ function render(){
       tbody.appendChild(tr);
     }
     const monthHols=Object.entries(holidayMap).filter(([k])=>k.startsWith(cur.format('YYYY-MM')));
-    document.getElementById('holidays').innerHTML=monthHols.map(([d,name])=>`<div>${d}: ${name}</div>`).join('');
+    document.getElementById('holidays').innerHTML=monthHols.map(([d,n])=>`<div>${d}: ${n[lang]}</div>`).join('');
   }else{
     cal.style.display='none';
     yearCal.style.display='flex';
@@ -134,7 +148,7 @@ function render(){
       const table=document.createElement('table');
       const thead=document.createElement('thead');
       const headRow=document.createElement('tr');
-      ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(dn=>{const th=document.createElement('th');th.textContent=dn;headRow.appendChild(th);});
+      dowNames.forEach(dn=>{const th=document.createElement('th');th.textContent=dn;headRow.appendChild(th);});
       thead.appendChild(headRow); table.appendChild(thead);
       const body=document.createElement('tbody');
       let d=month.startOf('month').startOf('week');
@@ -148,7 +162,8 @@ function render(){
             const iso=d.format('YYYY-MM-DD');
             if(d.day()===0) td.classList.add('sun');
             if(d.day()===6) td.classList.add('sat');
-            if(holidayMap[iso]){td.classList.add('holiday'); td.title=holidayMap[iso];}
+            const h=holidayMap[iso];
+            if(h){td.classList.add('holiday'); td.title=h[lang];}
             if(d.isSame(dayjs(),'day')) td.classList.add('today');
           }
           tr.appendChild(td); d=d.add(1,'day');
@@ -160,11 +175,12 @@ function render(){
       yearCal.appendChild(monthDiv);
     }
     const yearHols=Object.entries(holidayMap).filter(([k])=>k.startsWith(cur.format('YYYY'))).sort((a,b)=>a[0].localeCompare(b[0]));
-    document.getElementById('holidays').innerHTML=yearHols.map(([d,name])=>`<div>${d} (${dayjs(d).format('dddd')}): ${name}</div>`).join('');
+    document.getElementById('holidays').innerHTML=yearHols.map(([d,n])=>`<div>${d} (${dowFull[dayjs(d).day()]}): ${n[lang]}</div>`).join('');
   }
 }
 yearSel.onchange=()=>{cur=cur.year(parseInt(yearSel.value,10));render();};
 modeSel.onchange=render;
+langSel.onchange=render;
 prev.onclick=e=>{e.preventDefault();cur=cur.subtract(1,'month');render();};
 next.onclick=e=>{e.preventDefault();cur=cur.add(1,'month');render();};
 </script>
