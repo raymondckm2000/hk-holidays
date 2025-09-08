@@ -52,8 +52,8 @@ async function fetchHtml(urls) {
 }
 
 async function get1823List() {
-  const enRaw = await fetchJson(EN_URL) || [];
-  const zhRaw = await fetchJson(ZH_URLS) || [];
+  const enRaw = await fetchJson(EN_URL);
+  const zhRaw = await fetchJson(ZH_URLS);
 
   // The 1823 iCal feed used to return a simple array of events.  In
   // mid-2024 the format changed to a nested object (jCal style).  To
@@ -61,17 +61,58 @@ async function get1823List() {
   // more defensive manner.
   const extractEvents = data => {
     if (!data) return [];
-    if (Array.isArray(data)) return data;
-    // jCal format: { vcalendar: [ { vevent: [ ... ] } ] }
-    if (Array.isArray(data.vcalendar)) {
-      const cal = data.vcalendar[0] || {};
-      if (Array.isArray(cal.vevent)) return cal.vevent;
+
+    const fromProps = props => {
+      const obj = {};
+      for (const p of Array.isArray(props) ? props : []) {
+        if (!Array.isArray(p)) continue;
+        const [name, , , value] = p;
+        if (!name) continue;
+        obj[name.toLowerCase()] = value;
+      }
+      return obj;
+    };
+
+    // jCal array format: ['vcalendar', [ ...props ], [ components ]]
+    if (Array.isArray(data) && data[0] === 'vcalendar') {
+      const components = Array.isArray(data[2]) ? data[2] : [];
+      return components
+        .filter(c => Array.isArray(c) && c[0] === 'vevent')
+        .map(c => fromProps(c[1]));
     }
+
+    if (Array.isArray(data)) return data;
+
+    // jCal object format: { vcalendar: [ { vevent: [ ... ] } ] }
+    if (data && Array.isArray(data.vcalendar)) {
+      const cal = data.vcalendar[0] || {};
+      const events = Array.isArray(cal.vevent) ? cal.vevent : [];
+      return events.map(ev => {
+        if (Array.isArray(ev)) return fromProps(ev[1]);
+        const obj = {};
+        if (ev && typeof ev === 'object') {
+          for (const [name, val] of Object.entries(ev)) {
+            const lower = name.toLowerCase();
+            if (val && typeof val === 'object') {
+              if (Array.isArray(val)) obj[lower] = val[0];
+              else if ('value' in val) obj[lower] = val.value;
+              else obj[lower] = val;
+            } else {
+              obj[lower] = val;
+            }
+          }
+        }
+        return obj;
+      });
+    }
+
     return [];
   };
 
-  const en = extractEvents(enRaw);
-  const zh = extractEvents(zhRaw);
+  const enRawEvents = extractEvents(enRaw);
+  const zhRawEvents = extractEvents(zhRaw);
+  const en = Array.isArray(enRawEvents) ? enRawEvents : [];
+  const zh = Array.isArray(zhRawEvents) ? zhRawEvents : [];
 
   const getDate = item => {
     const d = item?.date || item?.dtstart || item?.['dtstart;value=date'] || item?.DTSTART || item?.['DTSTART;VALUE=DATE'];
