@@ -55,10 +55,9 @@ async function get1823List() {
   const enRaw = await fetchJson(EN_URL);
   const zhRaw = await fetchJson(ZH_URLS);
 
-  // The 1823 iCal feed used to return a simple array of events.  In
-  // mid-2024 the format changed to a nested object (jCal style).  To
-  // remain backwards compatible we extract the actual event list in a
-  // more defensive manner.
+  // The 1823 iCal feed used to return a simple array of events. In mid-2024
+  // the format switched to a nested jCal structure, so we defensively extract
+  // the event components here.
   const extractEvents = data => {
     if (!data) return [];
 
