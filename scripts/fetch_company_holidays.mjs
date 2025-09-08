@@ -52,8 +52,8 @@ async function fetchHtml(urls) {
 }
 
 async function get1823List() {
-  const enRaw = await fetchJson(EN_URL) || [];
-  const zhRaw = await fetchJson(ZH_URLS) || [];
+  const enRaw = await fetchJson(EN_URL);
+  const zhRaw = await fetchJson(ZH_URLS);
 
   // The 1823 iCal feed used to return a simple array of events.  In
   // mid-2024 the format changed to a nested object (jCal style).  To
@@ -61,8 +61,28 @@ async function get1823List() {
   // more defensive manner.
   const extractEvents = data => {
     if (!data) return [];
+
+    // jCal array format: ['vcalendar', [ ...props ], [ components ]]
+    if (Array.isArray(data) && data[0] === 'vcalendar') {
+      const components = Array.isArray(data[2]) ? data[2] : [];
+      return components
+        .filter(c => Array.isArray(c) && c[0] === 'vevent')
+        .map(c => {
+          const props = Array.isArray(c[1]) ? c[1] : [];
+          const obj = {};
+          for (const p of props) {
+            if (!Array.isArray(p)) continue;
+            const [name, , , value] = p;
+            if (!name) continue;
+            obj[name.toLowerCase()] = value;
+          }
+          return obj;
+        });
+    }
+
     if (Array.isArray(data)) return data;
-    // jCal format: { vcalendar: [ { vevent: [ ... ] } ] }
+
+    // jCal object format: { vcalendar: [ { vevent: [ ... ] } ] }
     if (Array.isArray(data.vcalendar)) {
       const cal = data.vcalendar[0] || {};
       if (Array.isArray(cal.vevent)) return cal.vevent;
@@ -70,8 +90,10 @@ async function get1823List() {
     return [];
   };
 
-  const en = extractEvents(enRaw);
-  const zh = extractEvents(zhRaw);
+  const enRawEvents = extractEvents(enRaw);
+  const zhRawEvents = extractEvents(zhRaw);
+  const en = Array.isArray(enRawEvents) ? enRawEvents : [];
+  const zh = Array.isArray(zhRawEvents) ? zhRawEvents : [];
 
   const getDate = item => {
     const d = item?.date || item?.dtstart || item?.['dtstart;value=date'] || item?.DTSTART || item?.['DTSTART;VALUE=DATE'];
