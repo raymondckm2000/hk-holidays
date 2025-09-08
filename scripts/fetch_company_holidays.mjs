@@ -52,31 +52,72 @@ async function fetchHtml(urls) {
 }
 
 async function get1823List() {
-  const en = await fetchJson(EN_URL) || [];
-  const zh = await fetchJson(ZH_URLS) || [];
+  const enRaw = await fetchJson(EN_URL) || [];
+  const zhRaw = await fetchJson(ZH_URLS) || [];
+
+  // The 1823 iCal feed used to return a simple array of events.  In
+  // mid-2024 the format changed to a nested object (jCal style).  To
+  // remain backwards compatible we extract the actual event list in a
+  // more defensive manner.
+  const extractEvents = data => {
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    // jCal format: { vcalendar: [ { vevent: [ ... ] } ] }
+    if (Array.isArray(data.vcalendar)) {
+      const cal = data.vcalendar[0] || {};
+      if (Array.isArray(cal.vevent)) return cal.vevent;
+    }
+    return [];
+  };
+
+  const en = extractEvents(enRaw);
+  const zh = extractEvents(zhRaw);
+
+  const getDate = item => {
+    const d = item?.date || item?.dtstart || item?.['dtstart;value=date'] || item?.DTSTART || item?.['DTSTART;VALUE=DATE'];
+    let v = Array.isArray(d) ? d[0] : d;
+    if (!v) return '';
+    // Formats like 20240101 or 2024-01-01T00:00:00
+    v = String(v).replace(/T.*$/, '');
+    if (/^\d{8}$/.test(v)) return `${v.slice(0,4)}-${v.slice(4,6)}-${v.slice(6,8)}`;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+    return '';
+  };
+
+  const getName = (item, lang) => {
+    const key = lang === 'en'
+      ? (item.title || item.summary || item.name || item.SUMMARY)
+      : (item.title || item.summary || item.name || item.SUMMARY);
+    const v = Array.isArray(key) ? key[0] : key;
+    return normalize(v);
+  };
+
   const map = new Map();
   for (const item of en) {
-    if (!item?.date) continue;
-    map.set(item.date, {
-      date: item.date,
-      name_en: normalize(item.title || item.summary || item.name),
+    const date = getDate(item);
+    if (!date) continue;
+    map.set(date, {
+      date,
+      name_en: getName(item, 'en'),
       name_zh: '',
       statutory: false,
       source: '1823'
     });
   }
   for (const item of zh) {
-    if (!item?.date) continue;
-    const target = map.get(item.date) || {
-      date: item.date,
+    const date = getDate(item);
+    if (!date) continue;
+    const target = map.get(date) || {
+      date,
       name_en: '',
       name_zh: '',
       statutory: false,
       source: '1823'
     };
-    target.name_zh = normalize(item.title || item.summary || item.name);
-    map.set(item.date, target);
+    target.name_zh = getName(item, 'zh');
+    map.set(date, target);
   }
+
   const out = [...map.values()].filter(h => {
     const y = parseInt(h.date.slice(0,4), 10);
     return y >= START_YEAR && y <= END_YEAR;
