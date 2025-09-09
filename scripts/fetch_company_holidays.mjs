@@ -29,6 +29,111 @@ function normalize(s) {
   return (s || '').trim();
 }
 
+const WEEKDAYS = ['SU','MO','TU','WE','TH','FR','SA'];
+
+function parseRRule(str) {
+  const out = {};
+  String(str).split(';').forEach(p => {
+    const [k, v] = p.split('=');
+    if (k && v) out[k.toUpperCase()] = v;
+  });
+  return out;
+}
+
+function parseRuleDate(v) {
+  if (!v) return '';
+  v = String(v).replace(/T.*$/, '');
+  if (/^\d{8}$/.test(v)) return `${v.slice(0,4)}-${v.slice(4,6)}-${v.slice(6,8)}`;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  return '';
+}
+
+function nthWeekday(year, month, weekday, n) {
+  if (!n) return null;
+  if (n > 0) {
+    const first = new Date(Date.UTC(year, month - 1, 1));
+    const offset = (weekday - first.getUTCDay() + 7) % 7;
+    const day = 1 + offset + 7 * (n - 1);
+    const last = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    return day <= last ? day : null;
+  }
+  const last = new Date(Date.UTC(year, month, 0));
+  const offset = (last.getUTCDay() - weekday + 7) % 7;
+  const day = last.getUTCDate() - offset + 7 * (n + 1);
+  return day >= 1 ? day : null;
+}
+
+function allWeekdays(year, month, weekday) {
+  const first = new Date(Date.UTC(year, month - 1, 1));
+  const offset = (weekday - first.getUTCDay() + 7) % 7;
+  const days = [];
+  let day = 1 + offset;
+  const last = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  while (day <= last) {
+    days.push(day);
+    day += 7;
+  }
+  return days;
+}
+
+function expandRRule(ruleStr, base) {
+  const rule = parseRRule(ruleStr);
+  if (rule.FREQ !== 'YEARLY') return [];
+
+  const baseDate = new Date(`${base}T00:00:00`);
+  const months = rule.BYMONTH ? rule.BYMONTH.split(',').map(Number) : [baseDate.getUTCMonth() + 1];
+  const until = parseRuleDate(rule.UNTIL);
+  const byMonthDay = rule.BYMONTHDAY ? rule.BYMONTHDAY.split(',').map(Number) : null;
+  const byDay = rule.BYDAY ? rule.BYDAY.split(',') : null;
+  const bySetPos = rule.BYSETPOS ? rule.BYSETPOS.split(',').map(Number) : null;
+
+  const out = [];
+  for (let y = START_YEAR; y <= END_YEAR; y++) {
+    for (const m of months) {
+      let days = [];
+      if (byMonthDay) {
+        days = byMonthDay;
+      } else if (byDay) {
+        let tmp = [];
+        for (const entry of byDay) {
+          const match = entry.match(/(-?\d+)?([A-Z]{2})/);
+          if (!match) continue;
+          const n = match[1] ? parseInt(match[1], 10) : null;
+          const w = WEEKDAYS.indexOf(match[2]);
+          if (w === -1) continue;
+          if (n) {
+            const d = nthWeekday(y, m, w, n);
+            if (d) tmp.push(d);
+          } else {
+            tmp = tmp.concat(allWeekdays(y, m, w));
+          }
+        }
+        tmp.sort((a, b) => a - b);
+        if (bySetPos && tmp.length) {
+          const selected = [];
+          for (const pos of bySetPos) {
+            const idx = pos > 0 ? pos - 1 : tmp.length + pos;
+            if (idx >= 0 && idx < tmp.length) selected.push(tmp[idx]);
+          }
+          days = selected;
+        } else {
+          days = tmp;
+        }
+      } else {
+        days = [baseDate.getUTCDate()];
+      }
+
+      const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
+      for (const d of days) {
+        if (d < 1 || d > last) continue;
+        const iso = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        if (!until || iso <= until) out.push(iso);
+      }
+    }
+  }
+  return out;
+}
+
 async function fetchJson(urls) {
   if (!Array.isArray(urls)) urls = [urls];
   for (const url of urls) {
@@ -136,12 +241,16 @@ async function get1823List() {
     const ruleStr = item.rrule || item.RRULE;
     if (ruleStr) {
       try {
+ codex/fix-fetch-holiday-data-function-esv2z3
+        expandRRule(ruleStr, base).forEach(d => dates.add(d));
+=======
         const dtstart = new Date(`${base}T00:00:00`);
         const rule = rrulestr(ruleStr, { dtstart });
         const rangeStart = new Date(`${START_YEAR}-01-01T00:00:00`);
         const rangeEnd = new Date(`${END_YEAR}-12-31T23:59:59`);
         rule.between(rangeStart, rangeEnd, true)
           .forEach(d => dates.add(d.toISOString().slice(0,10)));
+ main
       } catch (e) {
         console.warn(`Failed to parse rrule ${ruleStr}: ${e.message}`);
       }
