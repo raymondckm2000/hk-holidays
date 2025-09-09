@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { load } from 'cheerio';
 import dns from 'node:dns';
+import { rrulestr } from 'rrule';
 
 // Prefer IPv4 (1823 blocks IPv6 in some environments)
 try { dns.setDefaultResultOrder('ipv4first'); } catch {}
@@ -117,30 +118,69 @@ async function get1823List() {
     return normalize(v);
   };
 
+  const expandDates = item => {
+    const base = getDate(item);
+    if (!base) return [];
+    const dates = new Set([base]);
+
+    const addDates = (val, remove) => {
+      if (!val) return;
+      const arr = Array.isArray(val) ? val : [val];
+      for (const d of arr) {
+        const iso = getDate({ date: Array.isArray(d) ? d[0] : d });
+        if (!iso) continue;
+        if (remove) dates.delete(iso); else dates.add(iso);
+      }
+    };
+
+    const ruleStr = item.rrule || item.RRULE;
+    if (ruleStr) {
+      try {
+        const dtstart = new Date(`${base}T00:00:00`);
+        const rule = rrulestr(ruleStr, { dtstart });
+        const rangeStart = new Date(`${START_YEAR}-01-01T00:00:00`);
+        const rangeEnd = new Date(`${END_YEAR}-12-31T23:59:59`);
+        rule.between(rangeStart, rangeEnd, true)
+          .forEach(d => dates.add(d.toISOString().slice(0,10)));
+      } catch (e) {
+        console.warn(`Failed to parse rrule ${ruleStr}: ${e.message}`);
+      }
+    }
+
+    addDates(item.rdate || item.RDATE, false);
+    addDates(item.exdate || item.EXDATE, true);
+
+    return [...dates];
+  };
+
   const map = new Map();
   for (const item of en) {
-    const date = getDate(item);
-    if (!date) continue;
-    map.set(date, {
-      date,
-      name_en: getName(item, 'en'),
-      name_zh: '',
-      statutory: false,
-      source: '1823'
-    });
+    const dates = expandDates(item);
+    for (const date of dates) {
+      const target = map.get(date) || {
+        date,
+        name_en: '',
+        name_zh: '',
+        statutory: false,
+        source: '1823'
+      };
+      target.name_en = getName(item, 'en');
+      map.set(date, target);
+    }
   }
   for (const item of zh) {
-    const date = getDate(item);
-    if (!date) continue;
-    const target = map.get(date) || {
-      date,
-      name_en: '',
-      name_zh: '',
-      statutory: false,
-      source: '1823'
-    };
-    target.name_zh = getName(item, 'zh');
-    map.set(date, target);
+    const dates = expandDates(item);
+    for (const date of dates) {
+      const target = map.get(date) || {
+        date,
+        name_en: '',
+        name_zh: '',
+        statutory: false,
+        source: '1823'
+      };
+      target.name_zh = getName(item, 'zh');
+      map.set(date, target);
+    }
   }
 
   const out = [...map.values()].filter(h => {
