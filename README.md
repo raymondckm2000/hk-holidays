@@ -27,5 +27,15 @@
 - `hk_holidays_2017_2026.json` — 假期資料（2017–2026）
 - `generate.js` — Node.js 抓取假期原始來源並生成 JSON
 
+## Fetching holiday data
+
+```
+npm run fetch:holidays
+```
+
+上述指令會從 1823 等來源下載最新公司假期資料，
+並把 JSON 檔寫入 `data/`，驗證報告寫入 `reports/`。
+這兩個資料夾都設為 `.gitignore`，檔案不會被提交到版本控制中。
+
 ---
 © 2025 raymondckm2000 — Demo project for HK holiday data
