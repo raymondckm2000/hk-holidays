@@ -32,7 +32,7 @@ async function fetchJson(urls) {
       const res = await fetch(url);
       if (res.ok) return await res.json();
     } catch (e) {
-      console.warn(`⚠️  Failed to fetch ${url}: ${e.message}`);
+      console.warn(`Failed to fetch ${url}: ${e.message}`);
     }
   }
   return null;
@@ -45,7 +45,7 @@ async function fetchHtml(urls) {
       const res = await fetch(url);
       if (res.ok) return await res.text();
     } catch (e) {
-      console.warn(`⚠️  Failed to fetch ${url}: ${e.message}`);
+      console.warn(`Failed to fetch ${url}: ${e.message}`);
     }
   }
   return '';
