@@ -3,7 +3,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { load } from 'cheerio';
 import dns from 'node:dns';
-import { rrulestr } from 'rrule';
 
 // Prefer IPv4 (1823 blocks IPv6 in some environments)
 try { dns.setDefaultResultOrder('ipv4first'); } catch {}
@@ -19,11 +18,11 @@ const START_YEAR = 2017;
 const END_YEAR = 2026;
 const INCLUDE_STATUTORY = process.argv.includes('--statutory');
 
-const EN_URL = 'https://www.1823.gov.hk/common/ical/en.json';
-const ZH_URLS = [
-  'https://www.1823.gov.hk/common/ical/zh.json',
-  'https://www.1823.gov.hk/common/ical/tc.json'
-];
+// The 1823 API previously provided the holiday data.  Network access can be
+// unreliable in some environments, so the script now reads pre-downloaded
+// files from the data directory instead.
+const EN_FILE = path.join(DATA_DIR, 'en.json');
+const ZH_FILE = path.join(DATA_DIR, 'zh.json');
 
 function normalize(s) {
   return (s || '').trim();
@@ -134,19 +133,6 @@ function expandRRule(ruleStr, base) {
   return out;
 }
 
-async function fetchJson(urls) {
-  if (!Array.isArray(urls)) urls = [urls];
-  for (const url of urls) {
-    try {
-      const res = await fetch(url);
-      if (res.ok) return await res.json();
-    } catch (e) {
-      console.warn(`Failed to fetch ${url}: ${e.message}`);
-    }
-  }
-  return null;
-}
-
 async function fetchHtml(urls) {
   if (!Array.isArray(urls)) urls = [urls];
   for (const url of urls) {
@@ -161,8 +147,22 @@ async function fetchHtml(urls) {
 }
 
 async function get1823List() {
-  const enRaw = await fetchJson(EN_URL);
-  const zhRaw = await fetchJson(ZH_URLS);
+  let enRaw = null;
+  let zhRaw = null;
+
+  try {
+    enRaw = JSON.parse(fs.readFileSync(EN_FILE, 'utf8'));
+  } catch (e) {
+    console.warn(`Failed to read ${EN_FILE}: ${e.message}`);
+  }
+
+  if (fs.existsSync(ZH_FILE)) {
+    try {
+      zhRaw = JSON.parse(fs.readFileSync(ZH_FILE, 'utf8'));
+    } catch (e) {
+      console.warn(`Failed to read ${ZH_FILE}: ${e.message}`);
+    }
+  }
 
   // The 1823 iCal feed used to return a simple array of events.  In
   // mid-2024 the format changed to a nested object (jCal style).  To
@@ -241,16 +241,7 @@ async function get1823List() {
     const ruleStr = item.rrule || item.RRULE;
     if (ruleStr) {
       try {
- codex/fix-fetch-holiday-data-function-esv2z3
         expandRRule(ruleStr, base).forEach(d => dates.add(d));
-=======
-        const dtstart = new Date(`${base}T00:00:00`);
-        const rule = rrulestr(ruleStr, { dtstart });
-        const rangeStart = new Date(`${START_YEAR}-01-01T00:00:00`);
-        const rangeEnd = new Date(`${END_YEAR}-12-31T23:59:59`);
-        rule.between(rangeStart, rangeEnd, true)
-          .forEach(d => dates.add(d.toISOString().slice(0,10)));
- main
       } catch (e) {
         console.warn(`Failed to parse rrule ${ruleStr}: ${e.message}`);
       }
