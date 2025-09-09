@@ -67,8 +67,8 @@
           h.date,
           h.name_en,
           h.name_zh,
-          '✓',
-          h.statutory ? '✓' : ''
+          'Yes',
+          h.statutory ? 'Yes' : 'No'
         ];
         fields.forEach(text => {
           const td = document.createElement('td');
