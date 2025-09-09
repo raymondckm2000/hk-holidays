@@ -17,66 +17,65 @@
       text-align: center;
     }
 
-    ul {
-      list-style: none;
-      padding: 0;
-      max-width: 600px;
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 800px;
       margin: 0 auto;
     }
 
-    li {
-      background: #fff;
+    th,
+    td {
       border: 1px solid #d6e0ef;
-      border-radius: 8px;
       padding: 8px 12px;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 1px 2px rgba(16, 42, 67, 0.1);
+      background: #fff;
     }
 
-    li span {
-      flex: 1;
+    th {
+      background: #f0f4f8;
     }
 
-    button {
-      background: #e74c3c;
-      color: #fff;
-      border: 0;
-      border-radius: 6px;
-      padding: 4px 8px;
-      cursor: pointer;
-      transition: background 0.2s ease-in-out;
-    }
-
-    button:hover {
-      background: #c0392b;
+    tr:nth-child(even) td {
+      background: #f9fbfd;
     }
   </style>
 </head>
 <body>
   <h1>HK Holidays</h1>
-  <ul id="holiday-list"></ul>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>English name</th>
+        <th>Chinese name</th>
+        <th>General</th>
+        <th>Statutory</th>
+      </tr>
+    </thead>
+    <tbody id="holiday-list"></tbody>
+  </table>
 
   <script type="module">
     async function loadHolidays() {
-      const res = await fetch('./hk_holidays_2017_2026.json');
+      const res = await fetch('./data/company_holidays_ALL.json');
       const data = await res.json();
-      const list = document.getElementById('holiday-list');
+      const body = document.getElementById('holiday-list');
 
       data.forEach(h => {
-        const li = document.createElement('li');
-        li.innerHTML = `<span>${h.date} - ${h.name_en}</span>`;
-
-        const btn = document.createElement('button');
-        btn.textContent = 'Delete';
-        btn.addEventListener('click', () => {
-          list.removeChild(li);
+        const tr = document.createElement('tr');
+        const fields = [
+          h.date,
+          h.name_en,
+          h.name_zh,
+          '✓',
+          h.statutory ? '✓' : ''
+        ];
+        fields.forEach(text => {
+          const td = document.createElement('td');
+          td.textContent = text;
+          tr.appendChild(td);
         });
-
-        li.appendChild(btn);
-        list.appendChild(li);
+        body.appendChild(tr);
       });
     }
     loadHolidays();

@@ -1,0 +1,20 @@
+[
+  {
+    "date": "2024-01-01",
+    "name_en": "The first day of January",
+    "name_zh": "元旦",
+    "statutory": true
+  },
+  {
+    "date": "2024-02-10",
+    "name_en": "Lunar New Year's Day",
+    "name_zh": "農曆年初一",
+    "statutory": true
+  },
+  {
+    "date": "2024-04-05",
+    "name_en": "Ching Ming Festival",
+    "name_zh": "清明節",
+    "statutory": true
+  }
+]
