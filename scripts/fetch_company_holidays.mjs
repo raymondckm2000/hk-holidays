@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { load } from 'cheerio';
 import dns from 'node:dns';
+import { rrulestr } from 'rrule';
 
 // Prefer IPv4 (1823 blocks IPv6 in some environments)
 try { dns.setDefaultResultOrder('ipv4first'); } catch {}
@@ -240,7 +241,16 @@ async function get1823List() {
     const ruleStr = item.rrule || item.RRULE;
     if (ruleStr) {
       try {
+ codex/fix-fetch-holiday-data-function-esv2z3
         expandRRule(ruleStr, base).forEach(d => dates.add(d));
+=======
+        const dtstart = new Date(`${base}T00:00:00`);
+        const rule = rrulestr(ruleStr, { dtstart });
+        const rangeStart = new Date(`${START_YEAR}-01-01T00:00:00`);
+        const rangeEnd = new Date(`${END_YEAR}-12-31T23:59:59`);
+        rule.between(rangeStart, rangeEnd, true)
+          .forEach(d => dates.add(d.toISOString().slice(0,10)));
+ main
       } catch (e) {
         console.warn(`Failed to parse rrule ${ruleStr}: ${e.message}`);
       }
