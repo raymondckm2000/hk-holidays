@@ -1,13 +1,16 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { load } from 'cheerio';
 import dns from 'node:dns';
 
 // Prefer IPv4 (1823 blocks IPv6 in some environments)
 try { dns.setDefaultResultOrder('ipv4first'); } catch {}
 
-const DATA_DIR = path.resolve('data');
-const REPORT_DIR = path.resolve('reports');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT_DIR = path.resolve(__dirname, '..');
+const DATA_DIR = path.join(ROOT_DIR, 'data');
+const REPORT_DIR = path.join(ROOT_DIR, 'reports');
 fs.mkdirSync(DATA_DIR, { recursive: true });
 fs.mkdirSync(REPORT_DIR, { recursive: true });
 
