@@ -57,7 +57,7 @@
 
   <script type="module">
     async function loadHolidays() {
-      const res = await fetch('./hk_holidays_2017_2026.json');
+      const res = await fetch('./data/company_holidays_ALL.json');
       const data = await res.json();
       const body = document.getElementById('holiday-list');
 
@@ -67,8 +67,13 @@
           h.date,
           h.name_en,
           h.name_zh,
+codex/revise-holiday-list.html-to-display-json-data-4d6ed4
+          'Yes',
+          h.statutory ? 'Yes' : 'No'
+=======
           h.types?.general_holiday ? '✓' : '',
           h.types?.statutory_holiday ? '✓' : ''
+main
         ];
         fields.forEach(text => {
           const td = document.createElement('td');
