@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { load } from 'cheerio';
 import dns from 'node:dns';
 
 // Prefer IPv4 (1823 blocks IPv6 in some environments)
@@ -322,6 +321,13 @@ async function getStatutoryDates(year) {
   ];
   const html = await fetchHtml(urls);
   if (!html) return new Set();
+  let load;
+  try {
+    ({ load } = await import('cheerio'));
+  } catch (e) {
+    console.warn(`cheerio not available: ${e.message}`);
+    return new Set();
+  }
   const $ = load(html);
   const dates = new Set();
   $('li, td, tr, p').each((_, el) => {
