@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Update Company Holidays</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 16px; background: #f7f9fc; color: #102a43; }
+    button { background: #1f6feb; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    pre { background: #fff; border: 1px solid #d6e0ef; padding: 12px; max-height: 60vh; overflow: auto; }
+  </style>
+</head>
+<body>
+  <h1>Update Company Holidays</h1>
+  <p>
+    This tool reads all JSON files in the <code>data/</code> directory (except <code>company_holidays_ALL.json</code>)
+    and merges their English and Chinese holiday names into a new <code>company_holidays_ALL.json</code> file.
+  </p>
+  <button id="btnRun">Run Update</button>
+  <pre id="log"></pre>
+
+  <script type="module">
+    const logEl = document.getElementById('log');
+    const log = (msg) => { logEl.textContent += msg + '\n'; };
+
+    async function listDataFiles() {
+      const res = await fetch('./data/');
+      const html = await res.text();
+      const files = [...html.matchAll(/href="([^"]+\.json)"/g)].map(m => m[1]);
+      return files.filter(f => f !== 'company_holidays_ALL.json');
+    }
+
+    function parseDate(str) {
+      if (!str) return '';
+      const s = String(str).replace(/T.*$/, '');
+      if (/^\d{8}$/.test(s)) return `${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}`;
+      return s;
+    }
+
+    async function run() {
+      log('Loading existing company_holidays_ALL.json...');
+      const base = await (await fetch('./data/company_holidays_ALL.json')).json();
+      const map = new Map(base.map(h => [h.date, h]));
+
+      log('Scanning data directory...');
+      const files = await listDataFiles();
+      for (const file of files) {
+        log(`Processing ${file}...`);
+        const json = await (await fetch('./data/' + file)).json();
+        const events = json?.vcalendar?.[0]?.vevent || [];
+        const isZh = file.includes('-tc') || file.startsWith('tc');
+        events.forEach(ev => {
+          const date = parseDate(ev?.dtstart?.[0]);
+          if (!date) return;
+          const name = ev.summary || '';
+          const entry = map.get(date) || { date, name_en: '', name_zh: '', statutory: false, source: '1823' };
+          if (isZh) entry.name_zh = name; else entry.name_en = name;
+          map.set(date, entry);
+        });
+      }
+
+      const updated = Array.from(map.values()).sort((a,b)=>a.date.localeCompare(b.date));
+      log('Generating file...');
+      const blob = new Blob([JSON.stringify(updated, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'company_holidays_ALL.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      log('Done. Download started.');
+    }
+
+    document.getElementById('btnRun').addEventListener('click', () => {
+      document.getElementById('btnRun').disabled = true;
+      run().catch(err => { log('Error: ' + err.message); }).finally(() => {
+        document.getElementById('btnRun').disabled = false;
+      });
+    });
+  </script>
+</body>
+</html>
