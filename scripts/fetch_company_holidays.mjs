@@ -21,7 +21,7 @@ const INCLUDE_STATUTORY = process.argv.includes('--statutory');
 // unreliable in some environments, so the script now reads pre-downloaded
 // files from the data directory instead.
 const EN_FILE = path.join(DATA_DIR, 'en.json');
-const ZH_FILE = path.join(DATA_DIR, 'zh.json');
+const ZH_FILE = path.join(DATA_DIR, 'tc.json');
 
 function normalize(s) {
   return (s || '').trim();
