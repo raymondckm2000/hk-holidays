@@ -1,5 +1,719 @@
 [
   {
+    "date": "2018-01-01",
+    "name_en": "The first day of January",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-02-16",
+    "name_en": "Lunar New Year’s Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-02-17",
+    "name_en": "The second day of Lunar New Year",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-02-19",
+    "name_en": "The fourth day of Lunar New Year",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-03-30",
+    "name_en": "Good Friday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-03-31",
+    "name_en": "The day following Good Friday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-04-02",
+    "name_en": "Easter Monday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-04-05",
+    "name_en": "Ching Ming Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-05-01",
+    "name_en": "Labour Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-05-22",
+    "name_en": "The Birthday of the Buddha",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-06-18",
+    "name_en": "Tuen Ng Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-07-02",
+    "name_en": "The day following Hong Kong Special Administrative Region Establishment Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-09-25",
+    "name_en": "The day following the Chinese Mid-Autumn Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-10-01",
+    "name_en": "National Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-10-17",
+    "name_en": "Chung Yeung Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-12-25",
+    "name_en": "Christmas Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2018-12-26",
+    "name_en": "The first weekday after Christmas Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-01-01",
+    "name_en": "The first day of January",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-02-05",
+    "name_en": "Lunar New Year’s Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-02-06",
+    "name_en": "The second day of Lunar New Year",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-02-07",
+    "name_en": "The third day of Lunar New Year",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-04-05",
+    "name_en": "Ching Ming Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-04-19",
+    "name_en": "Good Friday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-04-20",
+    "name_en": "The day following Good Friday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-04-22",
+    "name_en": "Easter Monday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-05-01",
+    "name_en": "Labour Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-05-13",
+    "name_en": "The day following the Birthday of the Buddha",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-06-07",
+    "name_en": "Tuen Ng Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-07-01",
+    "name_en": "Hong Kong Special Administrative Region Establishment Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-09-14",
+    "name_en": "The day following the Chinese Mid-Autumn Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-10-01",
+    "name_en": "National Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-10-07",
+    "name_en": "Chung Yeung Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-12-25",
+    "name_en": "Christmas Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2019-12-26",
+    "name_en": "The first weekday after Christmas Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-01-01",
+    "name_en": "The first day of January",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-01-25",
+    "name_en": "Lunar New Year’s Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-01-27",
+    "name_en": "The third day of Lunar New Year",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-01-28",
+    "name_en": "The fourth day of Lunar New Year",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-04-04",
+    "name_en": "Ching Ming Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-04-10",
+    "name_en": "Good Friday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-04-11",
+    "name_en": "The day following Good Friday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-04-13",
+    "name_en": "Easter Monday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-04-30",
+    "name_en": "Birthday of the Buddha",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-05-01",
+    "name_en": "Labour Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-06-25",
+    "name_en": "Tuen Ng Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-07-01",
+    "name_en": "Hong Kong Special Administrative Region Establishment Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-10-01",
+    "name_en": "National Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-10-02",
+    "name_en": "The day following the Chinese Mid-Autumn Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-10-26",
+    "name_en": "The day following Chung Yeung Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-12-25",
+    "name_en": "Christmas Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2020-12-26",
+    "name_en": "The first weekday after Christmas Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-01-01",
+    "name_en": "The first day of January",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-02-12",
+    "name_en": "Lunar New Year’s Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-02-13",
+    "name_en": "The second day of Lunar New Year",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-02-15",
+    "name_en": "The fourth day of Lunar New Year",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-04-02",
+    "name_en": "Good Friday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-04-03",
+    "name_en": "The day following Good Friday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-04-05",
+    "name_en": "The day following Ching Ming Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-04-06",
+    "name_en": "The day following Easter Monday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-05-01",
+    "name_en": "Labour Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-05-19",
+    "name_en": "Birthday of the Buddha",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-06-14",
+    "name_en": "Tuen Ng Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-07-01",
+    "name_en": "Hong Kong Special Administrative Region Establishment Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-09-22",
+    "name_en": "The day following the Chinese Mid-Autumn Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-10-01",
+    "name_en": "National Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-10-14",
+    "name_en": "Chung Yeung Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-12-25",
+    "name_en": "Christmas Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2021-12-27",
+    "name_en": "The first weekday after Christmas Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-01-01",
+    "name_en": "The first day of January",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-02-01",
+    "name_en": "Lunar New Year’s Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-02-02",
+    "name_en": "The second day of Lunar New Year",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-02-03",
+    "name_en": "The third day of Lunar New Year",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-04-05",
+    "name_en": "Ching Ming Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-04-15",
+    "name_en": "Good Friday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-04-16",
+    "name_en": "The day following Good Friday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-04-18",
+    "name_en": "Easter Monday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-05-02",
+    "name_en": "The day following Labour Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-05-09",
+    "name_en": "The day following the Birthday of the Buddha",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-06-03",
+    "name_en": "Tuen Ng Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-07-01",
+    "name_en": "Hong Kong Special Administrative Region Establishment Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-09-12",
+    "name_en": "The second day following the Chinese Mid-Autumn Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-10-01",
+    "name_en": "National Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-10-04",
+    "name_en": "Chung Yeung Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-12-26",
+    "name_en": "The first weekday after Christmas Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2022-12-27",
+    "name_en": "The second weekday after Christmas Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-01-02",
+    "name_en": "The day following the first day of January",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-01-23",
+    "name_en": "The second day of Lunar New Year",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-01-24",
+    "name_en": "The third day of Lunar New Year",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-01-25",
+    "name_en": "The fourth day of Lunar New Year",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-04-05",
+    "name_en": "Ching Ming Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-04-07",
+    "name_en": "Good Friday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-04-08",
+    "name_en": "The day following Good Friday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-04-10",
+    "name_en": "Easter Monday",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-05-01",
+    "name_en": "Labour Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-05-26",
+    "name_en": "The Birthday of the Buddha",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-06-22",
+    "name_en": "Tuen Ng Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-07-01",
+    "name_en": "Hong Kong Special Administrative Region Establishment Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-09-30",
+    "name_en": "The day following the Chinese Mid-Autumn Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-10-02",
+    "name_en": "The day following National Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-10-23",
+    "name_en": "Chung Yeung Festival",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-12-25",
+    "name_en": "Christmas Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
+    "date": "2023-12-26",
+    "name_en": "The first weekday after Christmas Day",
+    "name_zh": "",
+    "statutory": false,
+    "source": "1823"
+  },
+  {
     "date": "2024-01-01",
     "name_en": "The first day of January",
     "name_zh": "一月一日",

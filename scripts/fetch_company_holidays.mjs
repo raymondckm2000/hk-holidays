@@ -19,9 +19,8 @@ const INCLUDE_STATUTORY = process.argv.includes('--statutory');
 
 // The 1823 API previously provided the holiday data.  Network access can be
 // unreliable in some environments, so the script now reads pre-downloaded
-// files from the data directory instead.
-const EN_FILE = path.join(DATA_DIR, 'en.json');
-const ZH_FILE = path.join(DATA_DIR, 'tc.json');
+// files from the data directory instead.  All JSON files (except the generated
+// company_holidays_*.json outputs) will be scanned automatically.
 
 function normalize(s) {
   return (s || '').trim();
@@ -146,22 +145,13 @@ async function fetchHtml(urls) {
 }
 
 async function get1823List() {
-  let enRaw = null;
-  let zhRaw = null;
+  // Load all JSON files in the data directory except the generated
+  // company_holidays_*.json files.  Files containing "en" are treated as
+  // English sources while those containing "tc" or "zh" are treated as
+  // Chinese sources.
 
-  try {
-    enRaw = JSON.parse(fs.readFileSync(EN_FILE, 'utf8'));
-  } catch (e) {
-    console.warn(`Failed to read ${EN_FILE}: ${e.message}`);
-  }
-
-  if (fs.existsSync(ZH_FILE)) {
-    try {
-      zhRaw = JSON.parse(fs.readFileSync(ZH_FILE, 'utf8'));
-    } catch (e) {
-      console.warn(`Failed to read ${ZH_FILE}: ${e.message}`);
-    }
-  }
+  const files = fs.readdirSync(DATA_DIR)
+    .filter(f => f.endsWith('.json') && !f.startsWith('company_holidays'));
 
   // The 1823 iCal feed used to return a simple array of events.  In
   // mid-2024 the format changed to a nested object (jCal style).  To
@@ -198,10 +188,26 @@ async function get1823List() {
     return [];
   };
 
-  const enRawEvents = extractEvents(enRaw);
-  const zhRawEvents = extractEvents(zhRaw);
-  const en = Array.isArray(enRawEvents) ? enRawEvents : [];
-  const zh = Array.isArray(zhRawEvents) ? zhRawEvents : [];
+  const en = [];
+  const zh = [];
+
+  for (const name of files) {
+    let raw;
+    try {
+      const txt = fs.readFileSync(path.join(DATA_DIR, name), 'utf8').replace(/^\uFEFF/, '');
+      raw = JSON.parse(txt);
+    } catch (e) {
+      console.warn(`Failed to read ${name}: ${e.message}`);
+      continue;
+    }
+
+    const events = extractEvents(raw);
+    if (/tc|zh/i.test(name)) {
+      if (Array.isArray(events)) zh.push(...events);
+    } else if (/en/i.test(name)) {
+      if (Array.isArray(events)) en.push(...events);
+    }
+  }
 
   const getDate = item => {
     const d = item?.date || item?.dtstart || item?.['dtstart;value=date'] || item?.DTSTART || item?.['DTSTART;VALUE=DATE'];
