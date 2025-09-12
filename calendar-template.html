@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <title>Simple Calendar Template</title>
 <style>
 body{font-family:Arial, sans-serif;}
-#nav{display:flex;justify-content:space-between;align-items:center;max-width:840px;margin:20px auto;font-size:32px;}
-#nav a{text-decoration:none;color:#00f;}
-#title{font-weight:bold;}
+#nav{display:flex;align-items:center;max-width:840px;margin:20px auto;font-size:32px;}
+#nav a{text-decoration:none;color:#00f;width:100px;text-align:center;}
+#title{flex:1;text-align:center;font-weight:bold;}
 #options{text-align:center;max-width:840px;margin:10px auto;font-size:28px;}
 table.calendar{border-collapse:collapse;margin:0 auto;}
 table.calendar th,table.calendar td{border:1px solid #ccc;width:40px;height:40px;text-align:center;font-size:14px;}
@@ -31,19 +31,21 @@ table.calendar td.holiday{background:#ffdddd;}
 </head>
 <body>
 <div id="nav">
+  <a id="prevYear" href="#">&laquo;</a>
   <a id="prev" href="#">&#60; Prev</a>
   <span id="title"></span>
   <a id="next" href="#">Next &#62;</a>
+  <a id="nextYear" href="#">&raquo;</a>
 </div>
 <div id="options">
   View:
   <select id="mode">
     <option value="month">Month</option>
-    <option value="year">Year</option>
+    <option value="year" selected>Year</option>
   </select>
   Lang:
   <select id="langSel">
-    <option value="en">English</option>
+    <option value="en" selected>English</option>
     <option value="zh">中文</option>
   </select>
   Year:
@@ -64,6 +66,8 @@ let holidayMap={};
 const yearSel=document.getElementById('yearSel');
 const modeSel=document.getElementById('mode');
 const langSel=document.getElementById('langSel');
+modeSel.value='year';
+langSel.value='en';
 const DOW_ZH=['日','一','二','三','四','五','六'];
 const DOW_EN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const DOW_EN_FULL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -87,7 +91,11 @@ fetch('data/company_holidays_ALL.json').then(r=>r.json()).then(data=>{
     opt.value=y; opt.textContent=y;
     yearSel.appendChild(opt);
   }
-  if(!years.includes(String(cur.year()))) cur=cur.year(parseInt(years[0],10));
+  if(!years.includes(String(cur.year()))){
+    const opt=document.createElement('option');
+    opt.value=cur.year(); opt.textContent=cur.year();
+    yearSel.appendChild(opt);
+  }
   yearSel.value=cur.year();
   render();
 });
@@ -190,6 +198,8 @@ modeSel.onchange=render;
 langSel.onchange=render;
 prev.onclick=e=>{e.preventDefault();cur=cur.subtract(1,'month');render();};
 next.onclick=e=>{e.preventDefault();cur=cur.add(1,'month');render();};
+prevYear.onclick=e=>{e.preventDefault();cur=cur.subtract(1,'year');render();};
+nextYear.onclick=e=>{e.preventDefault();cur=cur.add(1,'year');render();};
 </script>
 </body>
 </html>
