@@ -59,7 +59,7 @@ table.calendar td.holiday{background:#ffdddd;}
 <div id="holidays"></div>
 <script type="module">
 import dayjs from 'https://cdn.jsdelivr.net/npm/dayjs@1.11.8/+esm';
-let cur=dayjs('2025-09-01');
+let cur=dayjs();
 let holidayMap={};
 const yearSel=document.getElementById('yearSel');
 const modeSel=document.getElementById('mode');
@@ -68,23 +68,26 @@ const DOW_ZH=['日','一','二','三','四','五','六'];
 const DOW_EN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const DOW_EN_FULL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 fetch('data/company_holidays_ALL.json').then(r=>r.json()).then(data=>{
+  let years=[];
   if(Array.isArray(data)){
+    years=[...new Set(data.map(h=>h.date?.slice(0,4)).filter(Boolean))].sort();
     for(const h of data){
       if(h.date) holidayMap[h.date]={zh:h.name_zh||'',en:h.name_en||''};
     }
   }else{
-    for(const year in data){
-      for(const h of data[year]){
-        holidayMap[h.date]={zh:h.name_zh||'',en:h.name_en||''};
+    years=Object.keys(data).sort();
+    for(const y of years){
+      for(const h of data[y]){
+        if(h.date) holidayMap[h.date]={zh:h.name_zh||'',en:h.name_en||''};
       }
     }
   }
-  const years=[...new Set(Object.keys(holidayMap).map(d=>d.slice(0,4)))].sort();
   for(const y of years){
     const opt=document.createElement('option');
     opt.value=y; opt.textContent=y;
     yearSel.appendChild(opt);
   }
+  if(!years.includes(String(cur.year()))) cur=cur.year(parseInt(years[0],10));
   yearSel.value=cur.year();
   render();
 });
