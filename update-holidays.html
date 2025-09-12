@@ -47,7 +47,12 @@
       const files = await listDataFiles();
       for (const file of files) {
         log(`Processing ${file}...`);
-        const json = await (await fetch('./data/' + file)).json();
+        // Some data files include a UTF-8 BOM which breaks JSON.parse in browsers.
+        // Fetch as text and strip a leading BOM before parsing to ensure Chinese
+        // holiday names are read correctly.
+        const res = await fetch('./data/' + file);
+        const text = await res.text();
+        const json = JSON.parse(text.replace(/^\uFEFF/, ''));
         const events = json?.vcalendar?.[0]?.vevent || [];
         const isZh = file.includes('-tc') || file.startsWith('tc');
         events.forEach(ev => {
