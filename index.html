@@ -1,444 +1,205 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="color-scheme" content="light dark" />
-  <title>HK Holidays (2017–2026) — Calendar + Editor + Theme + 1823 Sync</title>
-  <style>
-    :root{
-      color-scheme: light;
-      --bg:#f7f9fc; --panel:#ffffff; --text:#102a43; --muted:#486581;
-      --accent:#1f6feb; --ok:#2e7d32; --warn:#b26a00; --bad:#c62828;
-      --surface:#ffffff; --border:#d6e0ef; --input:#f1f5fb;
-      --holiday:#e91e63; --stat:#0aa86f;
-    }
-    html[data-theme="dark"]{
-      color-scheme: dark;
-      --bg:#0b1522; --panel:#0f1622; --text:#e9eef6; --muted:#9bb1c9;
-      --accent:#2ea3ff; --ok:#2ecc71; --warn:#f7c948; --bad:#e74c3c;
-      --surface:#101b2b; --border:#223146; --input:#0b1522;
-      --holiday:#ff6ea8; --stat:#49d1a1;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;padding:16px;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","PingFang TC","Hiragino Sans","Microsoft JhengHei",Arial,sans-serif;line-height:1.5}
-    a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
-    header{margin-bottom:16px}
-    .panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
-    .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
-    .row label{color:var(--muted);min-width:76px}
-    select,input[type="date"],input[type="text"]{background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:8px;height:36px;padding:6px 10px}
-    button{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:8px 14px;cursor:pointer}
-    button:disabled{opacity:.6;cursor:not-allowed}
-    .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--input);border:1px solid var(--border);color:var(--muted)}
-    .pill{border:1px solid var(--border);background:var(--input);color:var(--muted);padding:2px 8px;border-radius:999px}
-    .status{font-size:14px;color:var(--muted)} .status strong{color:var(--text)} .ok{color:var(--ok)} .problems{color:var(--warn)}
-
-    .cal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
-    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:8px}
-    .dow{font-size:12px;color:var(--muted);text-align:center;padding:6px 0}
-    .dow.sun{color:var(--holiday)}
-    .dow.sat{color:var(--accent)}
-    .cell{min-height:92px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:6px;position:relative}
-    .cell .d{font-size:12px;color:var(--muted)}
-    .cell .hl{margin-top:4px;font-size:12px;line-height:1.25}
-    .cell .hl .name{color:var(--holiday)}
-    .cell .hl .stat{color:var(--stat);font-weight:600;margin-left:6px;font-size:11px}
-    .cell.dim{opacity:.45}
-
-    /* 周末樣式 */
-    .cell.weekend{background:var(--surface)}
-    .cell.sun .d{color:var(--holiday)}
-    .cell.sat .d{color:var(--accent)}
-
-    .tblwrap{overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px}
-    table{width:100%;border-collapse:collapse;font-size:14px}
-    th,td{border-bottom:1px solid var(--border);padding:8px;text-align:left;vertical-align:top}
-    th{position:sticky;top:0;background:var(--panel);z-index:1}
-    .flex{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    .grow{flex:1}
-    .mb8{margin-bottom:8px}
-    .hide{display:none}
-    details>summary{list-style:none;cursor:pointer}
-    details>summary::-webkit-details-marker{display:none}
-  </style>
+<meta charset="utf-8">
+<title>Simple Calendar Template</title>
+<style>
+body{font-family:Arial, sans-serif;}
+#nav{display:flex;align-items:center;max-width:840px;margin:20px auto;font-size:32px;}
+#nav a{text-decoration:none;color:#00f;width:100px;text-align:center;}
+#title{flex:1;text-align:center;font-weight:bold;}
+#options{text-align:center;max-width:840px;margin:10px auto;font-size:28px;}
+table.calendar{border-collapse:collapse;margin:0 auto;}
+table.calendar th,table.calendar td{border:1px solid #ccc;width:40px;height:40px;text-align:center;font-size:14px;}
+table.calendar th{background:#eee;}
+table.calendar td.sun{color:#b30000;}
+table.calendar td.sat{color:#555;}
+table.calendar td.today{background:#ffeeba;}
+table.calendar td.holiday{background:#ffdddd;}
+#yearCal{display:none;flex-wrap:wrap;justify-content:center;max-width:840px;margin:10px auto;}
+#yearCal .month{margin:5px;width:260px;}
+#yearCal .month-title{text-align:center;font-weight:bold;font-size:20px;margin-bottom:4px;}
+#yearCal table{border-collapse:collapse;margin:0 auto;}
+#yearCal th,#yearCal td{border:1px solid #ccc;width:40px;height:40px;text-align:center;font-size:14px;}
+#yearCal th{background:#eee;}
+#yearCal td.sun{color:#b30000;}
+#yearCal td.sat{color:#555;}
+#yearCal td.today{background:#ffeeba;}
+#yearCal td.holiday{background:#ffdddd;}
+#holidays{max-width:840px;margin:10px auto;font-size:18px;}
+</style>
 </head>
 <body>
-  <header>
-    <h1>HK Holidays (2017–2026)</h1>
-    <p class="status">
-      預設讀取 <code>hk_holidays_2017_2026.json</code>；可手動同步 1823。
-      <span id="loadInfo" class="badge">初始化中…</span>
-      <span class="pill" id="themeBadge">—</span>
-    </p>
-  </header>
-
-  <div class="panel">
-    <div class="row">
-      <label for="themeSelect">Theme</label>
-      <select id="themeSelect">
-        <option value="auto">Auto（跟隨系統）</option>
-        <option value="light">Light（日間/白色）</option>
-        <option value="dark">Dark（夜間/黑色）</option>
-      </select>
-
-      <button id="btnSync">🔄 同步 1823</button>
-      <label for="proxy">CORS Proxy</label>
-      <input id="proxy" type="text" placeholder="可留空；例：https://cors.isomorphic-git.org/" style="min-width:320px" />
-    </div>
-
-    <div class="row">
-      <label for="yearSel">年份</label>
-      <select id="yearSel"></select>
-
-      <label for="langSel">語言</label>
-      <select id="langSel">
-        <option value="zh">中文</option>
-        <option value="en">English</option>
-        <option value="both">雙語</option>
-      </select>
-
-      <label for="typeSel">篩選</label>
-      <select id="typeSel">
-        <option value="all">全部公眾假期</option>
-        <option value="stat">只顯示勞工假期（Statutory）</option>
-      </select>
-
-      <label for="viewSel">顯示</label>
-      <select id="viewSel">
-        <option value="month">按月</option>
-        <option value="year">按年</option>
-      </select>
-
-      <button id="btnPrev">&lt; 上個月</button>
-      <span class="badge" id="calTitle">—</span>
-      <button id="btnNext">下個月 &gt;</button>
-    </div>
-
-  </div>
-
-  <!-- 月曆 -->
-  <section class="panel" id="monthSection">
-    <div class="cal-head">
-      <div id="calTitle2" style="font-weight:700">—</div>
-      <div class="muted">點格子可在下面「年度列表」編輯</div>
-    </div>
-    <div class="cal-grid" id="calGrid"></div>
-  </section>
-
-  <!-- 全年假期 -->
-  <section class="panel hide" id="yearSection">
-    <div class="tblwrap">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:120px">日期</th>
-            <th style="width:120px">星期</th>
-            <th>名稱</th>
-            <th style="width:80px">Stat</th>
-          </tr>
-        </thead>
-        <tbody id="yearBody"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- 年度列表：移到月曆底部，並加 show/hide -->
-    <section class="panel">
-      <details id="editorBox" open>
-        <summary class="flex mb8" id="editorSummary">
-          <strong>年度列表</strong>
-          <span class="pill" id="yearCount">—</span>
-          <span class="pill" id="statCount">—</span>
-          <button type="button" id="btnEdit">編輯</button>
-        </summary>
-
-        <div class="flex mb8 edit-controls hide">
-          <label class="flex" style="gap:6px"><input type="checkbox" id="chkAll"> 全選</label>
-          <button id="btnDel">刪除勾選</button>
-          <button id="btnAdd">新增假期</button>
-        </div>
-
-        <div class="flex mb8 edit-controls hide">
-          <input id="fileInp" type="file" accept="application/json" hidden />
-          <button id="btnLoadLocal">載入本地 JSON…</button>
-          <button id="btnDlYear">下載本年 JSON</button>
-          <button id="btnDlAll">下載全部 JSON</button>
-          <span id="problemBadge" class="pill">—</span>
-        </div>
-
-        <div class="tblwrap">
-          <table id="tbl">
-            <thead>
-              <tr>
-                <th style="width:40px" class="edit-col hide"><input type="checkbox" id="chkAll2" title="全選" /></th>
-                <th style="width:120px">日期</th>
-                <th>名稱（中文）</th>
-                <th>名稱（English）</th>
-                <th style="width:140px">Statutory</th>
-              </tr>
-            </thead>
-            <tbody id="tbody"></tbody>
-          </table>
-        </div>
-      </details>
-    </section>
-
-  <script>
-    /* ========= helpers & theme ========= */
-    const $=(s,el=document)=>el.querySelector(s); const $$=(s,el=document)=>Array.from(el.querySelectorAll(s));
-    const THEME_KEY='hk_holidays_theme'; const LANG_KEY='hk_lang', TYPE_KEY='hk_type', EDITOR_KEY='hk_editor_open', VIEW_KEY='hk_view';
-
-    function getSystemPref(){return matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
-    function applyTheme(m){const f=(m==='auto')?getSystemPref():m;document.documentElement.setAttribute('data-theme',f);$('#themeBadge').textContent='主題：'+f}
-    function initTheme(){
-      const sel=$('#themeSelect'); const saved=localStorage.getItem(THEME_KEY)||'auto';
-      sel.value=saved; applyTheme(saved);
-      sel.onchange=()=>{localStorage.setItem(THEME_KEY, sel.value); applyTheme(sel.value);}
-      const mq=matchMedia('(prefers-color-scheme: dark)'); mq.addEventListener?.('change',()=>{ if((localStorage.getItem(THEME_KEY)||'auto')==='auto') applyTheme('auto')});
+<div id="nav">
+  <a id="prevYear" href="#">&laquo;</a>
+  <a id="prev" href="#">&#60; Prev</a>
+  <span id="title"></span>
+  <a id="next" href="#">Next &#62;</a>
+  <a id="nextYear" href="#">&raquo;</a>
+</div>
+<div id="options">
+  View:
+  <select id="mode">
+    <option value="month">Month</option>
+    <option value="year" selected>Year</option>
+  </select>
+  Lang:
+  <select id="langSel">
+    <option value="en" selected>English</option>
+    <option value="zh">中文</option>
+  </select>
+  Year:
+  <select id="yearSel"></select>
+</div>
+<table id="cal" class="calendar">
+  <thead>
+    <tr id="dow"></tr>
+  </thead>
+  <tbody></tbody>
+</table>
+<div id="yearCal"></div>
+<div id="holidays"></div>
+<script type="module">
+import dayjs from 'https://cdn.jsdelivr.net/npm/dayjs@1.11.8/+esm';
+let cur=dayjs();
+let holidayMap={};
+const yearSel=document.getElementById('yearSel');
+const modeSel=document.getElementById('mode');
+const langSel=document.getElementById('langSel');
+modeSel.value='year';
+langSel.value='en';
+const DOW_ZH=['日','一','二','三','四','五','六'];
+const DOW_EN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DOW_EN_FULL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+fetch('data/company_holidays_ALL.json').then(r=>r.json()).then(data=>{
+  let years=[];
+  if(Array.isArray(data)){
+    years=[...new Set(data.map(h=>h.date?.slice(0,4)).filter(Boolean))].sort();
+    for(const h of data){
+      if(h.date) holidayMap[h.date]={zh:h.name_zh||'',en:h.name_en||''};
     }
-
-    /* ========= data ========= */
-    let DATA={}; const YEARS=Array.from({length:10},(_,i)=>2017+i);
-      let CUR={y:new Date().getFullYear(), m:new Date().getMonth(), view:'month'};
-      let EDIT_MODE=false;
-      const SELECTED=new Set(); const DOW=['日','一','二','三','四','五','六'];
-      const DOW_EN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-
-    function setStatus(t){$('#loadInfo').textContent=t}
-    function normalize(raw){
-      const map={};
-      if(Array.isArray(raw)){
-        for(const r of raw){const y=+(r.date||'').slice(0,4); if(!y) continue;
-          (map[y] ||= []).push({date:r.date,name_zh:r.name_zh||r.zh||r.nameZh||'',name_en:r.name_en||r.en||r.nameEn||r.title||r.summary||'',statutory:!!(r.statutory??r.is_statutory??r.isStatutory??r.stat)});
+  }else{
+    years=Object.keys(data).sort();
+    for(const y of years){
+      for(const h of data[y]){
+        if(h.date) holidayMap[h.date]={zh:h.name_zh||'',en:h.name_en||''};
+      }
+    }
+  }
+  for(const y of years){
+    const opt=document.createElement('option');
+    opt.value=y; opt.textContent=y;
+    yearSel.appendChild(opt);
+  }
+  if(!years.includes(String(cur.year()))){
+    const opt=document.createElement('option');
+    opt.value=cur.year(); opt.textContent=cur.year();
+    yearSel.appendChild(opt);
+  }
+  yearSel.value=cur.year();
+  render();
+});
+function render(){
+  const mode=modeSel.value;
+  const lang=langSel.value;
+  const dowNames=lang==='zh'?DOW_ZH:DOW_EN;
+  const dowFull=lang==='zh'?DOW_ZH:DOW_EN_FULL;
+  document.getElementById('dow').innerHTML=dowNames.map(d=>`<th>${d}</th>`).join('');
+  const tbody=document.querySelector('#cal tbody');
+  const cal=document.getElementById('cal');
+  const yearCal=document.getElementById('yearCal');
+  const prevBtn=document.getElementById('prev');
+  const nextBtn=document.getElementById('next');
+  yearSel.value=cur.year();
+  if(mode==='month'){
+    cal.style.display='';
+    yearCal.style.display='none';
+    prevBtn.style.display='';
+    nextBtn.style.display='';
+    document.getElementById('title').textContent=`Calendar for ${cur.format('MMMM YYYY')} (Hong Kong)`;
+    tbody.innerHTML='';
+    const start=cur.startOf('month');
+    let d=start.startOf('week');
+    for(let r=0;r<6;r++){
+      const tr=document.createElement('tr');
+      for(let c=0;c<7;c++){
+        const td=document.createElement('td');
+        if(d.month()!==cur.month()) td.className='noday';
+        else{
+          td.textContent=d.date();
+          const iso=d.format('YYYY-MM-DD');
+          if(d.day()===0) td.classList.add('sun');
+          if(d.day()===6) td.classList.add('sat');
+          const h=holidayMap[iso];
+          if(h){td.classList.add('holiday'); td.title=h[lang];}
+          if(d.isSame(dayjs(),'day')) td.classList.add('today');
         }
-      }else if(raw&&typeof raw==='object'){
-        for(const [y,arr] of Object.entries(raw)){ map[y]=(arr||[]).map(r=>({date:r.date,name_zh:r.name_zh||r.zh||'',name_en:r.name_en||r.en||r.title||r.summary||'',statutory:!!(r.statutory??r.is_statutory)})); }
+        tr.appendChild(td); d=d.add(1,'day');
       }
-      for(const y of Object.keys(map)) map[y].sort((a,b)=>a.date.localeCompare(b.date));
-      return map;
+      tbody.appendChild(tr);
     }
-    async function loadDefault(){
-      try{
-        const r=await fetch('./hk_holidays_2017_2026.json',{cache:'no-store'}); if(!r.ok) throw 0;
-        DATA=normalize(await r.json()); setStatus('已載入本地 JSON');
-      }catch{
-        DATA={2025:[{date:'2025-01-01',name_zh:'元旦',name_en:'The first day of January',statutory:true}]};
-        setStatus('已載入內建示例（找不到本地 JSON）');
-      }
-    }
-
-    /* ========= 1823 sync (with optional proxy) ========= */
-    async function sync1823(){
-      const proxy=($('#proxy').value||'').trim();
-      const en='https://www.1823.gov.hk/common/ical/en.json';
-      const zh='https://www.1823.gov.hk/common/ical/zh.json';
-      const wrap=u=>proxy?proxy+u:u;
-
-      setStatus('同步中（1823）…');
-      try{
-        const [re,rz]=await Promise.allSettled([fetch(wrap(en)), fetch(wrap(zh))]);
-        if(re.status!=='fulfilled' || !re.value.ok) throw new Error('無法取得 1823 en.json（可能 CORS/來源不可用）');
-        const enArr=await re.value.json();
-        let zhArr=[]; if(rz.status==='fulfilled'&&rz.value.ok){ try{zhArr=await rz.value.json()}catch{} }
-
-        const zhMap=new Map(zhArr.map(e=>[String(e.dtstart).slice(0,10), e]));
-        const merged={};
-        for(const e of enArr){
-          const d=String(e.dtstart).slice(0,10); const y=+d.slice(0,4);
-          const peer=zhMap.get(d);
-          (merged[y] ||= []).push({date:d,name_en:e.summary||'',name_zh:peer?.summary||peer?.summary_zh||'',statutory:false});
-        }
-        for(const y of Object.keys(merged)) merged[y].sort((a,b)=>a.date.localeCompare(b.date));
-        DATA=merged;
-
-        const ys=Object.keys(DATA).map(Number).sort((a,b)=>a-b);
-        if(ys.length && !ys.includes(CUR.y)) CUR.y=ys[0];
-        setStatus(`已同步 1823（${proxy?'透過 Proxy':'直連'}）`);
-        renderAll();
-      }catch(err){
-        console.error(err);
-        setStatus('同步 1823 失敗（可嘗試填 CORS Proxy 後再試）');
-      }
-    }
-
-    /* ========= calendar ========= */
-    function renderCalendar(){
-      const y=CUR.y, m=CUR.m, title=`${y} 年 ${m+1} 月`;
-      $('#calTitle').textContent=title; $('#calTitle2').textContent=title;
-      const g=$('#calGrid'); g.innerHTML='';
-      for(let i=0;i<DOW.length;i++){
-        const el=document.createElement('div');
-        el.className='dow';
-        if(i===0) el.classList.add('sun'); else if(i===6) el.classList.add('sat');
-        el.textContent=DOW[i];
-        g.appendChild(el);
-      }
-
-      const first=new Date(y,m,1), start=first.getDay(), days=new Date(y,m+1,0).getDate(), prevDays=start, prevMonthDays=new Date(y,m,0).getDate();
-      const lang=localStorage.getItem(LANG_KEY)||'zh', type=localStorage.getItem(TYPE_KEY)||'all';
-      const map=new Map((DATA[y]||[]).map(h=>[h.date,h]));
-      for(let i=0;i<42;i++){
-        const cell=document.createElement('div'); cell.className='cell';
-        const dow=i%7; if(dow===0) cell.classList.add('sun','weekend'); else if(dow===6) cell.classList.add('sat','weekend');
-        let d,yy=y,mm=m,dim=false;
-        if(i<prevDays){d=prevMonthDays-prevDays+1+i; mm=m-1; if(mm<0){mm=11;yy=y-1} dim=true}
-        else if(i>=prevDays+days){d=i-(prevDays+days)+1; mm=m+1; if(mm>11){mm=0;yy=y+1} dim=true}
-        else{d=i-prevDays+1}
-        const date=`${yy}-${String(mm+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const dEl=document.createElement('div'); dEl.className='d'; dEl.textContent=d; cell.appendChild(dEl);
-        const h=map.get(date);
-        if(h && (type==='all' || (type==='stat'&&h.statutory))){
-          const name=(lang==='zh')?h.name_zh:(lang==='en')?h.name_en:`${h.name_zh||''}${(h.name_zh&&h.name_en)?' / ':''}${h.name_en||''}`;
-          const hl=document.createElement('div'); hl.className='hl';
-          hl.innerHTML=`<span class="name">${name||'(未命名)'}</span>${h.statutory?'<span class="stat">STAT</span>':''}`;
-          cell.appendChild(hl);
-        }
-        if(dim) cell.classList.add('dim');
-        cell.addEventListener('click',()=>focusOrAdd(date));
-        g.appendChild(cell);
-      }
-    }
-
-    function renderYearView(){
-      const y=CUR.y;
-      $('#calTitle').textContent=`${y} 年`;
-      $('#calTitle2').textContent=`${y} 年`;
-      const lang=localStorage.getItem(LANG_KEY)||'zh';
-      const type=localStorage.getItem(TYPE_KEY)||'all';
-      const tbody=$('#yearBody');
-      tbody.innerHTML='';
-      for(const h of (DATA[y]||[])){
-        if(type==='stat' && !h.statutory) continue;
-        const name=(lang==='zh')?h.name_zh:(lang==='en')?h.name_en:`${h.name_zh||''}${(h.name_zh&&h.name_en)?' / ':''}${h.name_en||''}`;
-        const dow=DOW_EN[new Date(h.date).getDay()];
+    const monthHols=Object.entries(holidayMap)
+      .filter(([k])=>k.startsWith(cur.format('YYYY-MM')))
+      .sort((a,b)=>a[0].localeCompare(b[0]));
+    document.getElementById('holidays').innerHTML=monthHols
+      .map(([d,n])=>`<div>${d} (${dowFull[dayjs(d).day()]}): ${n[lang]}</div>`)
+      .join('');
+  }else{
+    cal.style.display='none';
+    yearCal.style.display='flex';
+    prevBtn.style.display='none';
+    nextBtn.style.display='none';
+    document.getElementById('title').textContent=`Calendar for Year ${cur.year()} (Hong Kong)`;
+    tbody.innerHTML='';
+    yearCal.innerHTML='';
+    for(let m=0;m<12;m++){
+      const month=dayjs(`${cur.year()}-${String(m+1).padStart(2,'0')}-01`);
+      const monthDiv=document.createElement('div');
+      monthDiv.className='month';
+      const title=document.createElement('div');
+      title.className='month-title';
+      title.textContent=month.format('MMMM');
+      monthDiv.appendChild(title);
+      const table=document.createElement('table');
+      const thead=document.createElement('thead');
+      const headRow=document.createElement('tr');
+      dowNames.forEach(dn=>{const th=document.createElement('th');th.textContent=dn;headRow.appendChild(th);});
+      thead.appendChild(headRow); table.appendChild(thead);
+      const body=document.createElement('tbody');
+      let d=month.startOf('month').startOf('week');
+      for(let r=0;r<6;r++){
         const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${h.date}</td><td>${dow}</td><td>${name||'(未命名)'}</td><td>${h.statutory?'STAT':''}</td>`;
-        tbody.appendChild(tr);
-      }
-    }
-
-    /* ========= editor ========= */
-    function refreshYearSel(){
-      const ys=Object.keys(DATA).map(Number).sort((a,b)=>a-b); const source=ys.length?ys:YEARS;
-      const ysel=$('#yearSel'); ysel.innerHTML=source.map(y=>`<option value="${y}">${y}</option>`).join('');
-      if(!source.includes(CUR.y)) CUR.y=source[0]; ysel.value=CUR.y;
-    }
-      function renderEditor(){
-        const y=CUR.y, list=(DATA[y]||[]).slice(), type=localStorage.getItem(TYPE_KEY)||'all', tb=$('#tbody'); tb.innerHTML='';
-        for(const h of list){
-          if(type==='stat' && !h.statutory) continue;
-          const tr=document.createElement('tr'); tr.dataset.date=h.date;
-
-          const tdChk=document.createElement('td'); tdChk.className='edit-col hide';
-          const cb=document.createElement('input'); cb.type='checkbox'; cb.checked=SELECTED.has(h.date); cb.disabled=!EDIT_MODE;
-          cb.onchange=()=>{ cb.checked?SELECTED.add(h.date):SELECTED.delete(h.date); syncMaster() }; tdChk.appendChild(cb); tr.appendChild(tdChk);
-
-          const tdDate=document.createElement('td'); const inDate=document.createElement('input'); inDate.type='date'; inDate.value=h.date; inDate.disabled=!EDIT_MODE;
-          inDate.onchange=()=>{ const idx=DATA[y].findIndex(x=>x.date===h.date); if(idx>=0){const nd=inDate.value; DATA[y][idx].date=nd; SELECTED.delete(h.date); h.date=nd; tr.dataset.date=nd; SELECTED.add(nd); sortYear(y); renderAll(); } };
-          tdDate.appendChild(inDate); tr.appendChild(tdDate);
-
-          const tdZh=document.createElement('td'); const inZh=document.createElement('input'); inZh.type='text'; inZh.className='grow'; inZh.value=h.name_zh||''; inZh.disabled=!EDIT_MODE; inZh.oninput=()=>{h.name_zh=inZh.value; checkProblems(); renderAll();}; tdZh.appendChild(inZh); tr.appendChild(tdZh);
-
-          const tdEn=document.createElement('td'); const inEn=document.createElement('input'); inEn.type='text'; inEn.className='grow'; inEn.value=h.name_en||''; inEn.disabled=!EDIT_MODE; inEn.oninput=()=>{h.name_en=inEn.value; checkProblems(); renderAll();}; tdEn.appendChild(inEn); tr.appendChild(tdEn);
-
-          const tdS=document.createElement('td'); const inS=document.createElement('input'); inS.type='checkbox'; inS.checked=!!h.statutory; inS.disabled=!EDIT_MODE; inS.onchange=()=>{h.statutory=inS.checked; renderAll(); updateCounts();}; tdS.appendChild(inS); tr.appendChild(tdS);
-
-          tb.appendChild(tr);
+        for(let c=0;c<7;c++){
+          const td=document.createElement('td');
+          if(d.month()!==month.month()) td.className='noday';
+          else{
+            td.textContent=d.date();
+            const iso=d.format('YYYY-MM-DD');
+            if(d.day()===0) td.classList.add('sun');
+            if(d.day()===6) td.classList.add('sat');
+            const h=holidayMap[iso];
+            if(h){td.classList.add('holiday'); td.title=h[lang];}
+            if(d.isSame(dayjs(),'day')) td.classList.add('today');
+          }
+          tr.appendChild(td); d=d.add(1,'day');
         }
-        updateCounts(); syncMaster(); updateEditMode();
+        body.appendChild(tr);
       }
-      function updateEditMode(){
-        $('#btnEdit').textContent=EDIT_MODE?'完成':'編輯';
-        for(const el of $$('.edit-controls')) el.classList.toggle('hide', !EDIT_MODE);
-        for(const el of $$('.edit-col')) el.classList.toggle('hide', !EDIT_MODE);
-        for(const inp of $$('#tbody input')) inp.disabled=!EDIT_MODE;
-      }
-      function sortYear(y){(DATA[y]||[]).sort((a,b)=>a.date.localeCompare(b.date))}
-    function syncMaster(){const rows=$$('#tbody tr'); const all=rows.length && rows.every(tr=>SELECTED.has(tr.dataset.date)); $('#chkAll').checked=all; $('#chkAll2').checked=all;}
-    function setMaster(){ for(const id of ['chkAll','chkAll2']) $('#'+id).onchange=e=>{ const on=e.target.checked; for(const tr of $$('#tbody tr')){const d=tr.dataset.date; const cb=$('input[type="checkbox"]',tr); cb.checked=on; on?SELECTED.add(d):SELECTED.delete(d);} syncMaster(); } }
-
-    function focusOrAdd(date){
-      const tr=$(`#tbody tr[data-date="${date}"]`);
-      if(tr){ tr.scrollIntoView({behavior:'smooth',block:'center'}); $('#editorBox').open=true; localStorage.setItem(EDITOR_KEY,'1'); tr.style.outline=`2px solid ${getComputedStyle(document.documentElement).getPropertyValue('--accent')}`; setTimeout(()=>tr.style.outline='none',900) }
-      else{ const y=+date.slice(0,4); (DATA[y] ||= []).push({date,name_zh:'（請輸入）',name_en:'(enter name)',statutory:false}); sortYear(y); CUR.y=y; $('#yearSel').value=y; renderAll(); $('#editorBox').open=true; localStorage.setItem(EDITOR_KEY,'1'); }
+      table.appendChild(body);
+      monthDiv.appendChild(table);
+      yearCal.appendChild(monthDiv);
     }
-
-    function updateCounts(){ const y=CUR.y, arr=(DATA[y]||[]); $('#yearCount').textContent=`本年共 ${arr.length} 筆`; $('#statCount').textContent=`Stat: ${arr.filter(h=>h.statutory).length}`; }
-    function checkProblems(){ let zh=0,en=0; for(const y of Object.keys(DATA)) for(const h of (DATA[y]||[])){ if(!h.name_zh) zh++; if(!h.name_en) en++; } if(zh||en){$('#problemBadge').textContent=`資料缺漏：中文 ${zh} / 英文 ${en}`; $('#problemBadge').classList.add('problems'); $('#problemBadge').classList.remove('ok')} else {$('#problemBadge').textContent='資料完整'; $('#problemBadge').classList.add('ok'); $('#problemBadge').classList.remove('problems')} }
-
-    function persistUi(){
-      $('#langSel').value=localStorage.getItem(LANG_KEY)||'zh';
-      $('#typeSel').value=localStorage.getItem(TYPE_KEY)||'all';
-      $('#viewSel').value=localStorage.getItem(VIEW_KEY)||'month';
-      CUR.view=$('#viewSel').value;
-      const open=localStorage.getItem(EDITOR_KEY)==='1';
-      $('#editorBox').open=open;
-    }
-    function renderAll(){
-      refreshYearSel();
-      persistUi();
-      updateCounts();
-      checkProblems();
-      if(CUR.view==='month') renderCalendar(); else renderYearView();
-      $('#monthSection').classList.toggle('hide', CUR.view!=='month');
-      $('#yearSection').classList.toggle('hide', CUR.view!=='year');
-      $('#btnPrev').classList.toggle('hide', CUR.view!=='month');
-      $('#btnNext').classList.toggle('hide', CUR.view!=='month');
-      renderEditor();
-    }
-
-    /* ========= io / buttons ========= */
-    function dl(obj, name){ const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},0); }
-
-      function bindButtons(){
-        $('#btnPrev').onclick=()=>{
-          if(CUR.view==='month'){
-            CUR.m--; if(CUR.m<0){CUR.m=11;CUR.y--; $('#yearSel').value=CUR.y;}
-          }else{
-            CUR.y--; $('#yearSel').value=CUR.y;
-          }
-          renderAll();
-        };
-        $('#btnNext').onclick=()=>{
-          if(CUR.view==='month'){
-            CUR.m++; if(CUR.m>11){CUR.m=0;CUR.y++; $('#yearSel').value=CUR.y;}
-          }else{
-            CUR.y++; $('#yearSel').value=CUR.y;
-          }
-          renderAll();
-        };
-        $('#yearSel').onchange=()=>{ CUR.y=+$('#yearSel').value; renderAll(); };
-        $('#langSel').onchange=()=>{ localStorage.setItem(LANG_KEY,$('#langSel').value); renderAll(); };
-        $('#typeSel').onchange=()=>{ localStorage.setItem(TYPE_KEY,$('#typeSel').value); renderAll(); };
-        $('#viewSel').onchange=()=>{ CUR.view=$('#viewSel').value; localStorage.setItem(VIEW_KEY,CUR.view); renderAll(); };
-
-        $('#btnEdit').onclick=()=>{ EDIT_MODE=!EDIT_MODE; updateEditMode(); };
-
-      $('#btnAdd').onclick=()=>{ const y=CUR.y; const date=`${y}-${String(CUR.m+1).padStart(2,'0')}-01`; (DATA[y] ||= []).push({date,name_zh:'（請輸入）',name_en:'(enter name)',statutory:false}); sortYear(y); renderAll(); focusOrAdd(date); }
-      $('#btnDel').onclick=()=>{ const y=CUR.y; DATA[y]=(DATA[y]||[]).filter(h=>!SELECTED.has(h.date)); SELECTED.clear(); renderAll(); }
-
-        $('#btnDlYear').onclick=()=>dl({[CUR.y]:DATA[CUR.y]||[]}, `hk_holidays_${CUR.y}.json`);
-        $('#btnDlAll').onclick=()=>dl(DATA, `hk_holidays_2017_2026.json`);
-
-      $('#btnLoadLocal').onclick=()=>$('#fileInp').click();
-      $('#fileInp').onchange=async e=>{ const f=e.target.files?.[0]; if(!f) return; try{ const json=JSON.parse(await f.text()); DATA=normalize(json); setStatus('已載入本地 JSON'); renderAll(); }catch(err){ alert('JSON 解析失敗：'+err.message);} finally{e.target.value=''} };
-
-      $('#btnSync').onclick=sync1823;
-
-      // 展收狀態記憶
-      $('#editorBox').addEventListener('toggle',()=>{ localStorage.setItem(EDITOR_KEY, $('#editorBox').open?'1':'0'); });
-      setMaster();
-    }
-
-    /* ========= boot ========= */
-    (async function boot(){
-      initTheme();
-      await loadDefault();
-      const ys=Object.keys(DATA).map(Number).sort((a,b)=>a-b);
-      if(ys.length && !ys.includes(CUR.y)) CUR.y=ys[0];
-      bindButtons(); renderAll();
-    })();
-  </script>
+    const yearHols=Object.entries(holidayMap).filter(([k])=>k.startsWith(cur.format('YYYY'))).sort((a,b)=>a[0].localeCompare(b[0]));
+    document.getElementById('holidays').innerHTML=yearHols.map(([d,n])=>`<div>${d} (${dowFull[dayjs(d).day()]}): ${n[lang]}</div>`).join('');
+  }
+}
+yearSel.onchange=()=>{cur=cur.year(parseInt(yearSel.value,10));render();};
+modeSel.onchange=render;
+langSel.onchange=render;
+prev.onclick=e=>{e.preventDefault();cur=cur.subtract(1,'month');render();};
+next.onclick=e=>{e.preventDefault();cur=cur.add(1,'month');render();};
+prevYear.onclick=e=>{e.preventDefault();cur=cur.subtract(1,'year');render();};
+nextYear.onclick=e=>{e.preventDefault();cur=cur.add(1,'year');render();};
+</script>
 </body>
 </html>
