@@ -13,14 +13,14 @@
 - 語言切換（中文 / English）
 
 ## 使用方式
-1. 開啟 [Demo 頁面](https://raymondckm2000.github.io/hk-holidays/)。
-2. 預設會載入 `data/company_holidays_ALL.json` 顯示假期。
-3. 可透過選單切換年份、語言與視圖。
-4. 如需離線預覽，可直接在瀏覽器開啟 `index.html`。
+- 開啟 [Demo 頁面](https://raymondckm2000.github.io/hk-holidays/)。
+- 預設會載入 `data/company_holidays_ALL.json` 顯示假期。
+- 可透過選單切換年份、語言與視圖。
+- 如需離線預覽，可直接在瀏覽器開啟 `index.html`。
 
 ## 專案檔案
 - `index.html` — 簡單月曆模板（類似 timeanddate 樣式）
-- `hk_holidays_2017_2026.json` — 假期資料（2017–2026）
+- `update-holidays.html` — 下載並合併資料至 `data/company_holidays_ALL.json`
 - `generate.js` — Node.js 抓取假期原始來源並生成 JSON
 
 ## Fetching holiday data
