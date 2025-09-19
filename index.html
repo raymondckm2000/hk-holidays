@@ -66,6 +66,10 @@ let holidayMap={};
 const yearSel=document.getElementById('yearSel');
 const modeSel=document.getElementById('mode');
 const langSel=document.getElementById('langSel');
+const prevBtn=document.getElementById('prev');
+const nextBtn=document.getElementById('next');
+const prevYearBtn=document.getElementById('prevYear');
+const nextYearBtn=document.getElementById('nextYear');
 modeSel.value='year';
 langSel.value='en';
 const DOW_ZH=['日','一','二','三','四','五','六'];
@@ -108,8 +112,6 @@ function render(){
   const tbody=document.querySelector('#cal tbody');
   const cal=document.getElementById('cal');
   const yearCal=document.getElementById('yearCal');
-  const prevBtn=document.getElementById('prev');
-  const nextBtn=document.getElementById('next');
   yearSel.value=cur.year();
   if(mode==='month'){
     cal.style.display='';
@@ -196,10 +198,10 @@ function render(){
 yearSel.onchange=()=>{cur=cur.year(parseInt(yearSel.value,10));render();};
 modeSel.onchange=render;
 langSel.onchange=render;
-prev.onclick=e=>{e.preventDefault();cur=cur.subtract(1,'month');render();};
-next.onclick=e=>{e.preventDefault();cur=cur.add(1,'month');render();};
-prevYear.onclick=e=>{e.preventDefault();cur=cur.subtract(1,'year');render();};
-nextYear.onclick=e=>{e.preventDefault();cur=cur.add(1,'year');render();};
+prevBtn.onclick=e=>{e.preventDefault();cur=cur.subtract(1,'month');render();};
+nextBtn.onclick=e=>{e.preventDefault();cur=cur.add(1,'month');render();};
+prevYearBtn.onclick=e=>{e.preventDefault();cur=cur.subtract(1,'year');render();};
+nextYearBtn.onclick=e=>{e.preventDefault();cur=cur.add(1,'year');render();};
 </script>
 </body>
 </html>
